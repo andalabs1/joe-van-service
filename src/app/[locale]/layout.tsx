@@ -1,0 +1,52 @@
+import {hasLocale, NextIntlClientProvider} from 'next-intl';
+import {getMessages} from 'next-intl/server';
+import {notFound} from 'next/navigation';
+import {routing, type Locale} from '@/i18n/routing';
+import {SiteHeader} from '@/components/site-header';
+import {SiteFooter} from '@/components/site-footer';
+import {MobileActions} from '@/components/mobile-actions';
+import {DesignProvider} from '@/components/design-provider';
+import {AntdRegistry} from '@ant-design/nextjs-registry';
+import {Prompt} from 'next/font/google';
+import '../globals.css';
+
+const prompt = Prompt({
+  weight: ['300', '400', '500', '600', '700', '800'],
+  subsets: ['thai', 'latin'],
+  display: 'swap',
+  variable: '--font-prompt'
+});
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({locale}));
+}
+
+export default async function LocaleLayout({
+  children,
+  params
+}: {
+  children: React.ReactNode;
+  params: Promise<{locale: string}>;
+}) {
+  const {locale} = await params;
+  if (!hasLocale(routing.locales, locale)) notFound();
+  const messages = await getMessages();
+
+  return (
+    <html lang={locale} className={prompt.variable}>
+      <body>
+        <a className="skip-link" href="#main">Skip to content</a>
+        <AntdRegistry>
+          <DesignProvider>
+            <NextIntlClientProvider messages={messages}>
+              <SiteHeader locale={locale as Locale} />
+              <main id="main">{children}</main>
+              <SiteFooter locale={locale as Locale} />
+              <MobileActions locale={locale as Locale} />
+            </NextIntlClientProvider>
+          </DesignProvider>
+        </AntdRegistry>
+      </body>
+    </html>
+  );
+}

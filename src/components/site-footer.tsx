@@ -1,0 +1,72 @@
+import {getTranslations} from 'next-intl/server';
+import {Link} from '@/i18n/navigation';
+import type {Locale} from '@/i18n/routing';
+import {publishedServices} from '@/data/services';
+import {vehicleGroups} from '@/data/vehicle-pricing';
+import {Logo} from './logo';
+
+export async function SiteFooter({locale}: {locale: Locale}) {
+  const t = await getTranslations({locale, namespace: 'Common'});
+  const footer = await getTranslations({locale, namespace: 'Footer'});
+  const vehicle = await getTranslations({locale, namespace: 'Vehicle'});
+  const bangkok = await getTranslations({locale, namespace: 'Bangkok'});
+  const regions = [
+    {value: 'metropolitan', label: bangkok('metropolitan')},
+    {value: 'east', label: bangkok('east')},
+    {value: 'west', label: bangkok('west')},
+    {value: 'north-northeast', label: bangkok('northNortheast')},
+    {value: 'south', label: bangkok('south')}
+  ];
+
+  return (
+    <footer className="site-footer">
+      <div className="shell footer-grid">
+        <div>
+          <div className="footer-brand"><Logo locale={locale} label={t('home')} /></div>
+          <p>{footer('summary')}</p>
+        </div>
+        <nav className="footer-col" aria-label={t('services')}>
+          <Link href="/services-rates" locale={locale} className="footer-heading">{t('services')}</Link>
+          <ul>
+            {publishedServices.map((service) => (
+              <li key={service.slug}>
+                <Link href={`/services-rates/${service.slug}`} locale={locale}>{service.name[locale]}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <nav className="footer-col" aria-label={t('vehicles')}>
+          <Link href="/vehicles" locale={locale} className="footer-heading">{t('vehicles')}</Link>
+          <ul>
+            {vehicleGroups.map((group) => (
+              <li key={group.key}>
+                <Link href={`/vehicles#vehicle-group-${group.key}`} locale={locale}>{vehicle(group.key)}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <nav className="footer-col" aria-label={t('routes')}>
+          <Link href="/routes" locale={locale} className="footer-heading">{t('routes')}</Link>
+          <ul>
+            <li>
+              <Link href="/routes/bangkok" locale={locale}>{bangkok('title')}</Link>
+            </li>
+            {regions.map((region) => (
+              <li key={region.value}>
+                <Link href={`/routes/bangkok?region=${region.value}`} locale={locale}>{region.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+      <div className="shell footer-bottom">
+        <p>{footer('pricing')}</p>
+        <div className="footer-bottom-links">
+          <Link href="/contact" locale={locale}>{t('contact')}</Link>
+          <Link href="/booking" locale={locale}>{t('booking')}</Link>
+        </div>
+        <small>© {new Date().getFullYear()} {t('brand')}. {t('allRights')}.</small>
+      </div>
+    </footer>
+  );
+}
