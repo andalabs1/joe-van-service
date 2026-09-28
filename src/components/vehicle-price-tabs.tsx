@@ -3,7 +3,7 @@
 import {Button, Table, Tabs, Tag} from 'antd';
 import type {ColumnsType} from 'antd/es/table';
 import {FiArrowRight} from 'react-icons/fi';
-import {LuBriefcaseBusiness, LuBus, LuBusFront, LuCar} from 'react-icons/lu';
+import {LuBusFront, LuCar} from 'react-icons/lu';
 import {formatPrice} from '@/data/pricing';
 import {
   vehicleGroups,
@@ -22,10 +22,8 @@ export type VehiclePriceTableRow = {
 type Labels = Record<VehicleCategory, string> & Record<(typeof vehicleGroups)[number]['key'], string>;
 
 const groupIcons = {
-  carSuv: <LuCar aria-hidden="true" />,
-  limousine: <LuBriefcaseBusiness aria-hidden="true" />,
-  mpvVan: <LuBusFront aria-hidden="true" />,
-  busCoach: <LuBus aria-hidden="true" />
+  van: <LuBusFront aria-hidden="true" />,
+  passengerCar: <LuCar aria-hidden="true" />
 };
 
 export function VehiclePriceTabs({
@@ -63,7 +61,7 @@ export function VehiclePriceTabs({
   return (
     <Tabs
       className="vehicle-price-tabs"
-      defaultActiveKey="mpvVan"
+      defaultActiveKey="van"
       items={vehicleGroups.map((group) => {
         const columns: ColumnsType<VehiclePriceTableRow> = [
           ...baseColumns,

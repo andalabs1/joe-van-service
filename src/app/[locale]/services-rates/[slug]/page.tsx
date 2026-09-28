@@ -18,7 +18,7 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   const {locale, slug} = await params;
   const service = getService(slug);
   if (!service) return {};
-  return buildMetadata({locale, path: `/services-rates/${slug}`, title: `${service.name[locale]} | ${locale === 'th' ? 'พี่โจ้รถตู้' : 'Joe Van Service'}`, description: service.shortDescription[locale]});
+  return buildMetadata({locale, path: `/services-rates/${slug}`, title: `${service.name[locale]} | mongkonridemate`, description: service.shortDescription[locale]});
 }
 
 export default async function ServiceDetailPage({params}: PageProps) {

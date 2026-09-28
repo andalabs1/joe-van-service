@@ -11,21 +11,17 @@ export type BookingState = {
 
 const bookingSchema = z.object({
   locale: z.enum(['th', 'en']),
-  service: z.string().min(1),
   pickupDate: z.string().min(1),
   pickupTime: z.string().min(1),
-  returnDate: z.string().optional(),
   origin: z.string().trim().min(2).max(160),
   destination: z.string().trim().min(2).max(160),
   tripType: z.enum(['one-way', 'round-trip', 'overnight']),
   passengers: z.coerce.number().int().min(1).max(50),
-  luggage: z.coerce.number().int().min(0).max(100),
-  vans: z.coerce.number().int().min(1).max(10),
-  customerName: z.string().trim().min(2).max(120),
+  vehicleType: z.enum(['vipVan', 'shortVan', 'suv', 'sedan']),
+  luggage: z.string().trim().max(120).optional(),
   telephone: z.string().trim().min(8).max(30),
   lineId: z.string().trim().max(100).optional(),
   notes: z.string().trim().max(1500).optional(),
-  privacyConsent: z.literal('on'),
   website: z.string().max(0)
 });
 

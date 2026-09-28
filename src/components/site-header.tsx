@@ -2,46 +2,23 @@ import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
-import {publishedServices} from '@/data/services';
-import {vehicleGroups} from '@/data/vehicle-pricing';
+import {vehicleModels} from '@/data/vehicles';
 import {LocaleSwitcher} from './locale-switcher';
 import {Logo} from './logo';
 import {
   AnchorIcon,
-  BriefcaseIcon,
-  CalendarIcon,
   ChevronDownIcon,
-  ClockIcon,
   CompassIcon,
   HomeIcon,
   MenuIcon,
-  NavigationIcon,
-  SendIcon,
   SunriseIcon,
   SunsetIcon,
-  UsersIcon
 } from './icons';
 import type {IconType} from 'react-icons';
 import {Suspense} from 'react';
 
 type SubLink = {href: string; label: string; icon?: IconType; image?: string};
 type NavLink = {href: string; label: string; children?: SubLink[]};
-
-const serviceIcons: Record<string, IconType> = {
-  'van-with-driver': UsersIcon,
-  'daily-charter': ClockIcon,
-  'airport-transfer': SendIcon,
-  'outstation-trip': NavigationIcon,
-  'multi-day-trip': CalendarIcon,
-  'corporate-transport': BriefcaseIcon
-};
-
-const groupImages: Record<string, string> = {
-  carSuv: '/model-car-suv.png',
-  limousine: '/model-limousine.png',
-  mpvVan: '/model-mpv-van.png',
-  busCoach: '/model-bus-coach.png'
-};
 
 const regionIcons: Record<string, IconType> = {
   metropolitan: HomeIcon,
@@ -81,28 +58,20 @@ export async function SiteHeader({locale}: {locale: Locale}) {
     {value: 'north-northeast', label: bangkok('northNortheast')},
     {value: 'south', label: bangkok('south')}
   ].map((region) => ({
-    href: `/routes/bangkok?region=${region.value}`,
+    href: `/routes#region-${region.value}`,
     label: region.label,
     icon: regionIcons[region.value]
   }));
   const links: NavLink[] = [
     {href: '/', label: t('home')},
-    {
-      href: '/services-rates',
-      label: t('services'),
-      children: publishedServices.map((service) => ({
-        href: `/services-rates/${service.slug}`,
-        label: service.name[locale],
-        icon: serviceIcons[service.slug]
-      }))
-    },
+    {href: '/services-rates', label: t('services')},
     {
       href: '/vehicles',
       label: t('vehicles'),
-      children: vehicleGroups.map((group) => ({
-        href: `/vehicles#vehicle-group-${group.key}`,
-        label: vehicle(group.key),
-        image: groupImages[group.key]
+      children: vehicleModels.map((model) => ({
+        href: `/vehicles#vehicle-group-${model.group}`,
+        label: vehicle(model.category),
+        image: model.image
       }))
     },
     {href: '/routes', label: t('routes'), children: regionLinks},

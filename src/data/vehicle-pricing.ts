@@ -1,13 +1,10 @@
 export const vehicleCategories = [
-  'carStandard', 'carExecutive', 'carFamily', 'carElectric',
-  'limoPremium', 'limoLuxury',
-  'vanStandard', 'vanExecutive', 'electricMpv', 'vanPremium', 'vanLuxury',
-  'busMinibus', 'busMidSized', 'busGroup'
+  'vipVan', 'shortVan', 'suv', 'sedan'
 ] as const;
 
 export type VehicleCategory = (typeof vehicleCategories)[number];
 export type VehiclePrices = Record<VehicleCategory, number | null>;
-export type PriceTuple = readonly [
+type LegacyPriceTuple = readonly [
   number | null, number | null, number | null, number | null,
   number | null, number | null,
   number | null, number | null, number | null, number | null, number | null,
@@ -15,17 +12,29 @@ export type PriceTuple = readonly [
 ];
 
 export const vehicleGroups = [
-  {key: 'carSuv', categories: vehicleCategories.slice(0, 4)},
-  {key: 'limousine', categories: vehicleCategories.slice(4, 6)},
-  {key: 'mpvVan', categories: vehicleCategories.slice(6, 11)},
-  {key: 'busCoach', categories: vehicleCategories.slice(11, 14)}
+  {key: 'van', categories: vehicleCategories.slice(0, 2)},
+  {key: 'passengerCar', categories: vehicleCategories.slice(2, 4)}
 ] as const;
 
-const toPrices = (values: PriceTuple): VehiclePrices => Object.fromEntries(
-  vehicleCategories.map((category, index) => [category, values[index]])
-) as VehiclePrices;
+export const vehicleStartingPrices: Record<VehicleCategory, number> = {
+  vipVan: 2500,
+  shortVan: 2500,
+  suv: 2800,
+  sedan: 1800
+};
 
-const routePriceRows: Record<string, PriceTuple> = {
+const withMinimum = (value: number | null, minimum: number) => value === null ? null : Math.max(value, minimum);
+
+// The supplied reference-rate dataset used the former 14-column fleet taxonomy.
+// Keep its route figures while exposing only the four current bookable vehicle types.
+const toPrices = (values: LegacyPriceTuple): VehiclePrices => ({
+  vipVan: withMinimum(values[7], vehicleStartingPrices.vipVan),
+  shortVan: withMinimum(values[6], vehicleStartingPrices.shortVan),
+  suv: withMinimum(values[2], vehicleStartingPrices.suv),
+  sedan: withMinimum(values[0], vehicleStartingPrices.sedan)
+});
+
+const routePriceRows: Record<string, LegacyPriceTuple> = {
   'don-mueang-airport': [1150, 1350, 1350, 1350, 3500, 6500, 1400, 1700, 3000, 3500, 10000, 7500, 13500, 15500],
   'suvarnabhumi-airport': [1150, 1350, 1350, 1350, 3500, 6500, 1400, 1700, 3000, 3500, 10000, 7500, 13500, 15500],
   'samut-prakan': [1100, 1300, 1300, 1300, 3500, 5500, 1300, 1600, 3000, 3500, 18000, 6500, 10000, 14000],
@@ -78,23 +87,9 @@ const routePriceRows: Record<string, PriceTuple> = {
   'chiang-rai': [14500, 16500, 16500, 16500, null, null, 16500, 20500, null, null, null, null, null, null]
 };
 
-export const getRouteVehiclePrices = (routeId: string) => toPrices(routePriceRows[routeId] ?? ([null, null, null, null, null, null, null, null, null, null, null, null, null, null] as PriceTuple));
+export const getRouteVehiclePrices = (routeId: string) => toPrices(routePriceRows[routeId] ?? ([null, null, null, null, null, null, null, null, null, null, null, null, null, null] as LegacyPriceTuple));
 
-export const getVehicleStartingPrices = (): VehiclePrices => {
-  const starting = Object.fromEntries(vehicleCategories.map((category) => [category, null])) as VehiclePrices;
-  const consider = (prices: VehiclePrices) => {
-    for (const category of vehicleCategories) {
-      const value = prices[category];
-      if (value === null) continue;
-      const current = starting[category];
-      if (current === null || value < current) starting[category] = value;
-    }
-  };
-  for (const row of Object.values(routePriceRows)) consider(toPrices(row));
-  for (const rate of hourlyVehicleRates) consider(rate.prices);
-  for (const rate of periodVehicleRates) consider(rate.prices);
-  return starting;
-};
+export const getVehicleStartingPrices = (): VehiclePrices => ({...vehicleStartingPrices});
 
 export const hourlyVehicleRates = [
   {hours: 3, maxKm: 200, prices: toPrices([1650, 1950, 1950, 1950, 7500, 13000, 1950, 2400, 4500, 7500, 10000, 9000, 15000, 21000])},

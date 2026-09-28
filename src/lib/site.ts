@@ -2,8 +2,9 @@ import type {Metadata} from 'next';
 import type {Locale} from '@/i18n/routing';
 
 export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://joe-van-service.vercel.app';
-export const phone = process.env.NEXT_PUBLIC_PHONE || '';
-export const lineUrl = process.env.NEXT_PUBLIC_LINE_URL || '';
+export const phone = process.env.NEXT_PUBLIC_PHONE || '0999241591';
+export const lineUrl = process.env.NEXT_PUBLIC_LINE_URL || 'https://line.me/R/ti/p/@385hqvbc';
+export const contactEmail = 'MONGKON_RideMate@gmail.com';
 
 export function localizedPath(locale: Locale, path = '') {
   const normalized = path === '/' ? '' : path.startsWith('/') ? path : `/${path}`;
@@ -38,7 +39,7 @@ export function buildMetadata({
       url: canonical,
       title,
       description,
-      siteName: locale === 'th' ? 'พี่โจ้รถตู้' : 'Joe Van Service',
+      siteName: 'mongkonridemate',
       locale: locale === 'th' ? 'th_TH' : 'en_US'
     },
     twitter: {

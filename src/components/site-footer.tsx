@@ -2,7 +2,7 @@ import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {publishedServices} from '@/data/services';
-import {vehicleGroups} from '@/data/vehicle-pricing';
+import {vehicleModels} from '@/data/vehicles';
 import {Logo} from './logo';
 
 export async function SiteFooter({locale}: {locale: Locale}) {
@@ -38,9 +38,9 @@ export async function SiteFooter({locale}: {locale: Locale}) {
         <nav className="footer-col" aria-label={t('vehicles')}>
           <Link href="/vehicles" locale={locale} className="footer-heading">{t('vehicles')}</Link>
           <ul>
-            {vehicleGroups.map((group) => (
-              <li key={group.key}>
-                <Link href={`/vehicles#vehicle-group-${group.key}`} locale={locale}>{vehicle(group.key)}</Link>
+            {vehicleModels.map((model) => (
+              <li key={model.category}>
+                <Link href={`/vehicles#vehicle-group-${model.group}`} locale={locale}>{vehicle(model.category)}</Link>
               </li>
             ))}
           </ul>
@@ -49,11 +49,11 @@ export async function SiteFooter({locale}: {locale: Locale}) {
           <Link href="/routes" locale={locale} className="footer-heading">{t('routes')}</Link>
           <ul>
             <li>
-              <Link href="/routes/bangkok" locale={locale}>{bangkok('title')}</Link>
+              <Link href="/routes#route-rates" locale={locale}>{bangkok('title')}</Link>
             </li>
             {regions.map((region) => (
               <li key={region.value}>
-                <Link href={`/routes/bangkok?region=${region.value}`} locale={locale}>{region.label}</Link>
+                <Link href={`/routes#region-${region.value}`} locale={locale}>{region.label}</Link>
               </li>
             ))}
           </ul>

@@ -2,13 +2,13 @@ import type {MetadataRoute} from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Joe Van Service',
-    short_name: 'Joe Van',
+    name: 'mongkonridemate',
+    short_name: 'mongkonridemate',
     description: 'Private van with driver in Bangkok and across Thailand',
     start_url: '/th',
     display: 'standalone',
-    background_color: '#f5f7f8',
-    theme_color: '#071d2b',
-    icons: [{src: '/icon.svg', sizes: 'any', type: 'image/svg+xml'}]
+    background_color: '#F3F5F6',
+    theme_color: '#0A274D',
+    icons: [{src: '/logo.webp', sizes: '1100x1100', type: 'image/webp'}]
   };
 }

@@ -1,13 +1,16 @@
+import Image from 'next/image';
 import type {Metadata} from 'next';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {buildMetadata} from '@/lib/site';
-import {featuredRoutes} from '@/data/routes';
+import {bangkokRoutes, type BangkokRoute, type RouteRegion} from '@/data/routes';
 import {formatPrice} from '@/data/pricing';
-import {ArrowIcon, ClockIcon, PinIcon, RouteIcon} from '@/components/icons';
 
-type PageProps = {params: Promise<{locale: Locale}>};
+type PageProps = {
+  params: Promise<{locale: Locale}>;
+  searchParams: Promise<{q?: string | string[]}>;
+};
 
 export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   const {locale} = await params;
@@ -15,22 +18,90 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   return buildMetadata({locale, path: '/routes', title: t('routesTitle'), description: t('routesDescription')});
 }
 
-export default async function RoutesPage({params}: PageProps) {
+const regions: RouteRegion[] = ['metropolitan', 'east', 'west', 'north-northeast', 'south'];
+
+export default async function RoutesPage({params, searchParams}: PageProps) {
   const {locale} = await params;
+  const query = await searchParams;
   const t = await getTranslations({locale, namespace: 'Routes'});
+  const rate = await getTranslations({locale, namespace: 'Bangkok'});
   const common = await getTranslations({locale, namespace: 'Common'});
+
+  const q = typeof query.q === 'string' ? query.q.trim().toLocaleLowerCase() : '';
+  const regionLabels: Record<RouteRegion, string> = {
+    metropolitan: rate('metropolitan'),
+    east: rate('east'),
+    west: rate('west'),
+    'north-northeast': rate('northNortheast'),
+    south: rate('south')
+  };
+
+  const startingPrice = (route: BangkokRoute) => {
+    if (route.prices.vanStandard !== null) return route.prices.vanStandard;
+    const available = Object.values(route.prices).filter((price): price is number => price !== null);
+    return available.length ? Math.min(...available) : null;
+  };
+
+  const renderPanelRows = (routes: BangkokRoute[]) => {
+    const half = Math.ceil(routes.length / 2);
+    return [routes.slice(0, half), routes.slice(half)].map((column, index) => (
+      <ul key={index}>
+        {column.map((route) => {
+          const price = startingPrice(route);
+          return (
+            <li key={route.id} className="price-row">
+              <span>{rate('origin')} → {route.destination[locale]}</span>
+              <strong>{price === null ? common('requestQuote') : formatPrice(price, locale)}</strong>
+            </li>
+          );
+        })}
+      </ul>
+    ));
+  };
+
+  const searchResults = q ? bangkokRoutes.filter((route) => `${route.destination.th} ${route.destination.en}`.toLocaleLowerCase().includes(q)) : [];
 
   return (
     <>
-      <section className="page-hero"><div className="shell"><p className="eyebrow">{t('eyebrow')}</p><h1>{t('title')}</h1><p>{t('lead')}</p></div></section>
-      <section className="section shell">
-        <Link href="/routes/bangkok" locale={locale} className="feature-route-card">
-          <div><span className="route-icon"><RouteIcon /></span><p className="eyebrow">50 destinations</p><h2>{t('bangkokTitle')}</h2><p>{t('bangkokText')}</p></div>
-          <span className="button button-dark">{common('viewRates')}<ArrowIcon /></span>
-        </Link>
+      <section className="routes-hero">
+        <Image src="/full-van.jpg" alt="" fill priority sizes="100vw" className="routes-hero-image" />
+        <div className="routes-hero-overlay" />
+        <div className="shell routes-hero-content"><p className="eyebrow light">{t('eyebrow')}</p><h1>{t('title')}</h1><p>{t('lead')}</p></div>
       </section>
-      <section className="section section-muted"><div className="shell"><div className="section-heading"><h2>{t('popularTitle')}</h2></div><div className="route-card-grid">{featuredRoutes.map((route) => <article key={route.id} className="compact-route-card"><div><PinIcon /><span>{route.distanceKm} {common('km')}</span></div><h3>{route.destination[locale]}</h3><p>{common('startingAt')} <strong>{formatPrice(route.prices.vanStandard, locale)}</strong></p><Link href={`/booking?origin=bangkok&destination=${route.id}`} locale={locale}>{common('booking')}<ArrowIcon /></Link></article>)}</div></div></section>
-      <section className="section shell"><div className="value-grid"><article><ArrowIcon /><h3>{t('oneWay')}</h3><p>{t('oneWayText')}</p></article><article><RouteIcon /><h3>{t('roundTrip')}</h3><p>{t('roundTripText')}</p></article><article><ClockIcon /><h3>{t('overnight')}</h3><p>{t('overnightText')}</p></article></div></section>
+
+      <section className="section shell route-rates-section" id="route-rates" aria-labelledby="route-rates-title">
+        <div className="section-heading"><p className="eyebrow">{rate('eyebrow')}</p><h2 id="route-rates-title">{rate('title')}</h2><p>{rate('lead')}</p></div>
+        <nav className="region-chips" aria-label={rate('regionLabel')}>
+          {regions.map((region) => <a key={region} href={`#region-${region}`}>{regionLabels[region]}</a>)}
+        </nav>
+        <form method="get" className="route-search" role="search">
+          <label><span>{rate('searchLabel')}</span><input type="search" name="q" defaultValue={q} placeholder={rate('searchPlaceholder')} /></label>
+          <button className="button button-dark" type="submit">{rate('filter')}</button>
+          {q && <Link href="/routes" locale={locale} className="clear-link">{rate('clear')}</Link>}
+        </form>
+        {q && (
+          <div className="route-search-results">
+            <div className="price-panel">
+              <div className="price-panel-head"><h2>{rate('results', {count: searchResults.length})}</h2></div>
+              {searchResults.length ? <div className="price-panel-grid">{renderPanelRows(searchResults)}</div> : <div className="empty-state"><h2>{rate('noResults')}</h2><Link href="/routes" locale={locale}>{rate('clear')}</Link></div>}
+            </div>
+          </div>
+        )}
+      </section>
+
+      {regions.map((region) => {
+        const rows = bangkokRoutes.filter((route) => route.region === region);
+        return (
+          <section key={region} id={`region-${region}`} className="section shell route-region-section" aria-labelledby={`region-${region}-title`}>
+            <div className="price-panel">
+              <div className="price-panel-head"><h2 id={`region-${region}-title`}>{regionLabels[region]}</h2></div>
+              <div className="price-panel-grid">{renderPanelRows(rows)}</div>
+            </div>
+          </section>
+        );
+      })}
+
+      <section className="section shell"><p className="data-note">{rate('note')}</p></section>
     </>
   );
 }

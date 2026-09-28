@@ -1,4 +1,5 @@
 import type {IconType} from 'react-icons';
+import {FaLine, FaWhatsapp} from 'react-icons/fa6';
 import {
   FiAnchor,
   FiArrowRight,
@@ -10,13 +11,15 @@ import {
   FiGitBranch,
   FiGlobe,
   FiHome,
+  FiHeart,
+  FiMail,
   FiMapPin,
   FiMenu,
-  FiMessageCircle,
   FiNavigation,
   FiPhone,
   FiSend,
   FiShield,
+  FiStar,
   FiSunrise,
   FiSunset,
   FiUsers
@@ -37,14 +40,18 @@ export const RouteIcon = decorative(FiGitBranch);
 export const ShieldIcon = decorative(FiShield);
 export const GlobeIcon = decorative(FiGlobe);
 export const MenuIcon = decorative(FiMenu);
-export const MessageIcon = decorative(FiMessageCircle);
 export const ChevronDownIcon = decorative(FiChevronDown);
 export const AnchorIcon = decorative(FiAnchor);
 export const BriefcaseIcon = decorative(FiBriefcase);
 export const CalendarIcon = decorative(FiCalendar);
 export const CompassIcon = decorative(FiCompass);
 export const HomeIcon = decorative(FiHome);
+export const HeartIcon = decorative(FiHeart);
+export const MailIcon = decorative(FiMail);
+export const StarIcon = decorative(FiStar);
 export const NavigationIcon = decorative(FiNavigation);
 export const SendIcon = decorative(FiSend);
 export const SunriseIcon = decorative(FiSunrise);
 export const SunsetIcon = decorative(FiSunset);
+export const LineIcon = decorative(FaLine);
+export const WhatsappIcon = decorative(FaWhatsapp);

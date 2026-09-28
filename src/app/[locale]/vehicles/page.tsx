@@ -18,20 +18,17 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
 }
 
 const useCaseKey: Record<(typeof vehicleCategories)[number], string> = {
-  carStandard: 'useCarStandard',
-  carExecutive: 'useCarExecutive',
-  carFamily: 'useCarFamily',
-  carElectric: 'useCarElectric',
-  limoPremium: 'useLimoPremium',
-  limoLuxury: 'useLimoLuxury',
-  vanStandard: 'useVanStandard',
-  vanExecutive: 'useVanExecutive',
-  electricMpv: 'useElectricMpv',
-  vanPremium: 'useVanPremium',
-  vanLuxury: 'useVanLuxury',
-  busMinibus: 'useBusMinibus',
-  busMidSized: 'useBusMidSized',
-  busGroup: 'useBusGroup'
+  vipVan: 'useVipVan',
+  shortVan: 'useShortVan',
+  suv: 'useSuv',
+  sedan: 'useSedan'
+};
+
+const seatKey: Record<(typeof vehicleCategories)[number], string> = {
+  vipVan: 'seats8',
+  shortVan: 'seats8',
+  suv: 'seats4To7',
+  sedan: 'seats3To4'
 };
 
 export default async function VehiclesPage({params}: PageProps) {
@@ -72,12 +69,14 @@ export default async function VehiclesPage({params}: PageProps) {
                 <article key={model.category} className="vehicle-model-card vehicle-page-card">
                   <div className="vehicle-model-image"><Image src={model.image} alt={vehicle(model.category)} fill sizes="(max-width: 760px) 82vw, 25vw" /></div>
                   <h3>{vehicle(model.category)}</h3>
+                  <p className="vehicle-spec-pending">{t(seatKey[model.category])}</p>
                   <p className="vehicle-best-for"><strong>{t('bestFor')}: </strong>{t(useCaseKey[model.category])}</p>
-                  <p className="price-kicker vehicle-starting">
-                    {price !== null ? `${common('startingAt')} ${formatPrice(price, locale)}` : common('requestQuote')}
-                  </p>
-                  <p className="vehicle-spec-pending">{t('specPending')}</p>
-                  <Link href={`/booking?vehicle=${model.category}`} locale={locale} className="text-link">{t('bookModel')}<ArrowIcon /></Link>
+                  <span className="vehicle-card-foot">
+                    <strong className="price-kicker vehicle-starting">
+                      {price !== null ? `${common('startingAt')} ${formatPrice(price, locale)}` : common('requestQuote')}
+                    </strong>
+                    <Link href={`/booking?vehicle=${model.category}`} locale={locale} className="text-link">{t('bookModel')}<ArrowIcon /></Link>
+                  </span>
                 </article>
               );
             })}
@@ -85,30 +84,30 @@ export default async function VehiclesPage({params}: PageProps) {
         </section>
       ))}
 
-      <section className="section section-muted">
+      <section className="section section-muted" aria-labelledby="compare-title">
         <div className="shell">
-          <div className="section-heading"><h2>{t('compareTitle')}</h2><p>{t('compareLead')}</p></div>
-          <div className="table-wrap">
-            <table className="price-table">
-              <caption>{t('compareTitle')}</caption>
-              <thead><tr><th scope="col">{t('model')}</th><th scope="col">{t('group')}</th><th scope="col">{t('startingFrom')}</th><th scope="col"><span className="visually-hidden">{common('booking')}</span></th></tr></thead>
-              <tbody>
-                {vehicleCategories.map((category) => {
-                  const group = vehicleGroups.find((item) => (item.categories as readonly string[]).includes(category));
-                  const price = starting[category];
-                  return (
-                    <tr key={category}>
-                      <th scope="row">{vehicle(category)}</th>
-                      <td>{group ? vehicle(group.key as VehicleGroupKey) : ''}</td>
-                      <td>{price !== null ? formatPrice(price, locale) : <span className="quote-label">{common('requestQuote')}</span>}</td>
-                      <td><Link href={`/booking?vehicle=${category}`} locale={locale} className="table-action" aria-label={`${t('bookModel')} ${vehicle(category)}`}><ArrowIcon /></Link></td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+          <div className="price-panel">
+            <div className="price-panel-head">
+              <h2 id="compare-title">{t('compareTitle')} <span>({t('startingFrom')})</span></h2>
+              <Link href="/booking" locale={locale}>{common('bookNow')} <span aria-hidden="true">›</span></Link>
+            </div>
+            <div className="price-panel-grid">
+              {[vehicleCategories.slice(0, 2), vehicleCategories.slice(2)].map((column, index) => (
+                <ul key={index}>
+                  {column.map((category) => {
+                    const price = starting[category];
+                    return (
+                      <li key={category} className="price-row">
+                        <span>{vehicle(category)} · {t(seatKey[category])}</span>
+                        <strong>{price !== null ? formatPrice(price, locale) : common('requestQuote')}</strong>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ))}
+            </div>
+            <p className="price-panel-note">{t('note')}</p>
           </div>
-          <p className="data-note">{t('note')}</p>
         </div>
       </section>
 

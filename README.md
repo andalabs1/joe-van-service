@@ -1,4 +1,4 @@
-# Joe Van Service
+# mongkonridemate
 
 Multilingual, SEO-first website for a private van service in Thailand.
 
@@ -34,8 +34,7 @@ The booking form intentionally returns a configuration notice until `BOOKING_WEB
 - `/th` and `/en`
 - `/[locale]/services-rates`
 - `/[locale]/services-rates/[slug]`
-- `/[locale]/routes`
-- `/[locale]/routes/bangkok`
+- `/[locale]/routes` (all regions as `#region-*` anchor sections)
 - `/[locale]/contact`
 - `/[locale]/booking`
 

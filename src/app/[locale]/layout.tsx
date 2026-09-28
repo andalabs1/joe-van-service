@@ -4,11 +4,19 @@ import {notFound} from 'next/navigation';
 import {routing, type Locale} from '@/i18n/routing';
 import {SiteHeader} from '@/components/site-header';
 import {SiteFooter} from '@/components/site-footer';
-import {MobileActions} from '@/components/mobile-actions';
+import {FloatingContact} from '@/components/mobile-actions';
 import {DesignProvider} from '@/components/design-provider';
 import {AntdRegistry} from '@ant-design/nextjs-registry';
 import {Prompt} from 'next/font/google';
+import type {Metadata} from 'next';
 import '../globals.css';
+
+export const metadata: Metadata = {
+  icons: {
+    icon: [{url: '/logo.webp', type: 'image/webp'}],
+    apple: [{url: '/logo.webp', type: 'image/webp'}]
+  }
+};
 
 const prompt = Prompt({
   weight: ['300', '400', '500', '600', '700', '800'],
@@ -42,7 +50,7 @@ export default async function LocaleLayout({
               <SiteHeader locale={locale as Locale} />
               <main id="main">{children}</main>
               <SiteFooter locale={locale as Locale} />
-              <MobileActions locale={locale as Locale} />
+              <FloatingContact locale={locale as Locale} />
             </NextIntlClientProvider>
           </DesignProvider>
         </AntdRegistry>

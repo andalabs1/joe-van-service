@@ -2,20 +2,18 @@
 
 import {useActionState} from 'react';
 import {useFormStatus} from 'react-dom';
-import {Checkbox, Input} from 'antd';
+import {Input} from 'antd';
 import {submitBooking, type BookingState} from '@/app/[locale]/booking/actions';
 import type {Locale} from '@/i18n/routing';
+import {BriefcaseIcon, CalendarIcon, ClockIcon, CompassIcon, LineIcon, MailIcon, PhoneIcon, PinIcon, RouteIcon, SendIcon, UsersIcon} from './icons';
 import {FormSelect} from './form-select';
 import {FormDatePicker, FormNumber, FormTimePicker} from './form-fields';
 
 type BookingLabels = {
   tripTitle: string;
   contactTitle: string;
-  service: string;
-  selectService: string;
   pickupDate: string;
   pickupTime: string;
-  returnDate: string;
   origin: string;
   destination: string;
   tripType: string;
@@ -23,24 +21,24 @@ type BookingLabels = {
   roundTrip: string;
   overnight: string;
   passengers: string;
+  vehicleType: string;
+  selectVehicle: string;
   luggage: string;
-  vans: string;
-  name: string;
+  luggagePlaceholder: string;
   telephone: string;
   lineId: string;
   notes: string;
-  consent: string;
   submit: string;
   submitting: string;
 };
 
-type ServiceOption = {value: string; label: string};
+type VehicleOption = {value: string; label: string};
 
 const initialState: BookingState = {status: 'idle'};
 
 function SubmitButton({labels}: {labels: BookingLabels}) {
   const {pending} = useFormStatus();
-  return <button className="button button-accent button-wide" type="submit" disabled={pending}>{pending ? labels.submitting : labels.submit}</button>;
+  return <button className="button button-accent button-wide booking-submit" type="submit" disabled={pending}><SendIcon />{pending ? labels.submitting : labels.submit}</button>;
 }
 
 function FieldError({state, name}: {state: BookingState; name: string}) {
@@ -51,13 +49,13 @@ function FieldError({state, name}: {state: BookingState; name: string}) {
 export function BookingForm({
   locale,
   labels,
-  services,
+  vehicles,
   defaults
 }: {
   locale: Locale;
   labels: BookingLabels;
-  services: ServiceOption[];
-  defaults: {service?: string; origin?: string; destination?: string; notes?: string};
+  vehicles: VehicleOption[];
+  defaults: {origin?: string; destination?: string; vehicle?: string; notes?: string};
 }) {
   const [state, formAction] = useActionState(submitBooking, initialState);
 
@@ -77,36 +75,33 @@ export function BookingForm({
       <fieldset>
         <legend>{labels.tripTitle}</legend>
         <div className="form-grid">
-          <label className="field field-full">
-            <span>{labels.service}</span>
-            <FormSelect
-              name="service"
-              defaultValue={defaults.service || ''}
-              options={services}
-              placeholder={labels.selectService}
-              required
-              ariaLabel={labels.service}
-              className="booking-select"
-            />
-            <FieldError state={state} name="service" />
-          </label>
           <label className="field">
-            <span>{labels.pickupDate}</span>
+            <span><CalendarIcon />{labels.pickupDate}</span>
             <FormDatePicker name="pickupDate" ariaLabel={labels.pickupDate} placeholder={labels.pickupDate} className="booking-control" />
             <FieldError state={state} name="pickupDate" />
           </label>
           <label className="field">
-            <span>{labels.pickupTime}</span>
+            <span><ClockIcon />{labels.pickupTime}</span>
             <FormTimePicker name="pickupTime" ariaLabel={labels.pickupTime} placeholder={labels.pickupTime} className="booking-control" />
             <FieldError state={state} name="pickupTime" />
           </label>
           <label className="field">
-            <span>{labels.returnDate}</span>
-            <FormDatePicker name="returnDate" ariaLabel={labels.returnDate} placeholder={labels.returnDate} className="booking-control" />
-            <FieldError state={state} name="returnDate" />
+            <span><PinIcon />{labels.origin}</span>
+            <Input name="origin" defaultValue={defaults.origin || ''} maxLength={160} required aria-label={labels.origin} className="booking-control" status={state.errors?.origin ? 'error' : ''} />
+            <FieldError state={state} name="origin" />
           </label>
           <label className="field">
-            <span>{labels.tripType}</span>
+            <span><PinIcon />{labels.destination}</span>
+            <Input name="destination" defaultValue={defaults.destination || ''} maxLength={160} required aria-label={labels.destination} className="booking-control" status={state.errors?.destination ? 'error' : ''} />
+            <FieldError state={state} name="destination" />
+          </label>
+          <label className="field">
+            <span><UsersIcon />{labels.passengers}</span>
+            <FormNumber name="passengers" defaultValue={1} min={1} max={50} ariaLabel={labels.passengers} className="booking-control" />
+            <FieldError state={state} name="passengers" />
+          </label>
+          <label className="field">
+            <span><RouteIcon />{labels.tripType}</span>
             <FormSelect
               name="tripType"
               defaultValue="one-way"
@@ -119,64 +114,47 @@ export function BookingForm({
               ariaLabel={labels.tripType}
               className="booking-select"
             />
-          </label>
-          <label className="field field-full">
-            <span>{labels.origin}</span>
-            <Input name="origin" defaultValue={defaults.origin || ''} maxLength={160} required aria-label={labels.origin} className="booking-control" status={state.errors?.origin ? 'error' : ''} />
-            <FieldError state={state} name="origin" />
-          </label>
-          <label className="field field-full">
-            <span>{labels.destination}</span>
-            <Input name="destination" defaultValue={defaults.destination || ''} maxLength={160} required aria-label={labels.destination} className="booking-control" status={state.errors?.destination ? 'error' : ''} />
-            <FieldError state={state} name="destination" />
+            <FieldError state={state} name="tripType" />
           </label>
           <label className="field">
-            <span>{labels.passengers}</span>
-            <FormNumber name="passengers" defaultValue={1} min={1} max={50} ariaLabel={labels.passengers} className="booking-control" />
-            <FieldError state={state} name="passengers" />
+            <span><CompassIcon />{labels.vehicleType}</span>
+            <FormSelect
+              name="vehicleType"
+              defaultValue={defaults.vehicle || ''}
+              options={vehicles}
+              placeholder={labels.selectVehicle}
+              required
+              ariaLabel={labels.vehicleType}
+              className="booking-select"
+            />
+            <FieldError state={state} name="vehicleType" />
           </label>
           <label className="field">
-            <span>{labels.luggage}</span>
-            <FormNumber name="luggage" defaultValue={0} min={0} max={100} ariaLabel={labels.luggage} className="booking-control" />
+            <span><BriefcaseIcon />{labels.luggage}</span>
+            <Input name="luggage" maxLength={120} placeholder={labels.luggagePlaceholder} aria-label={labels.luggage} className="booking-control" status={state.errors?.luggage ? 'error' : ''} />
             <FieldError state={state} name="luggage" />
-          </label>
-          <label className="field">
-            <span>{labels.vans}</span>
-            <FormNumber name="vans" defaultValue={1} min={1} max={10} ariaLabel={labels.vans} className="booking-control" />
-            <FieldError state={state} name="vans" />
           </label>
         </div>
       </fieldset>
 
-      <fieldset>
-        <legend>{labels.contactTitle}</legend>
+      <fieldset className="booking-contact-fields">
+        <legend className="visually-hidden">{labels.contactTitle}</legend>
         <div className="form-grid">
           <label className="field">
-            <span>{labels.name}</span>
-            <Input name="customerName" autoComplete="name" maxLength={120} required aria-label={labels.name} className="booking-control" status={state.errors?.customerName ? 'error' : ''} />
-            <FieldError state={state} name="customerName" />
-          </label>
-          <label className="field">
-            <span>{labels.telephone}</span>
+            <span><PhoneIcon />{labels.telephone}</span>
             <Input name="telephone" type="tel" autoComplete="tel" maxLength={30} required aria-label={labels.telephone} className="booking-control" status={state.errors?.telephone ? 'error' : ''} />
             <FieldError state={state} name="telephone" />
           </label>
-          <label className="field field-full">
-            <span>{labels.lineId}</span>
+          <label className="field">
+            <span><LineIcon />{labels.lineId}</span>
             <Input name="lineId" maxLength={100} aria-label={labels.lineId} className="booking-control" />
             <FieldError state={state} name="lineId" />
           </label>
           <label className="field field-full">
-            <span>{labels.notes}</span>
-            <Input.TextArea name="notes" rows={5} maxLength={1500} aria-label={labels.notes} className="booking-control" defaultValue={defaults.notes ? (locale === 'th' ? `รุ่นรถที่สนใจ: ${defaults.notes}` : `Preferred vehicle: ${defaults.notes}`) : undefined} />
+            <span><MailIcon />{labels.notes}</span>
+            <Input.TextArea name="notes" rows={5} maxLength={1500} aria-label={labels.notes} className="booking-control" defaultValue={defaults.notes ? (locale === 'th' ? `ประเภทบริการ: ${defaults.notes}` : `Service: ${defaults.notes}`) : undefined} />
             <FieldError state={state} name="notes" />
           </label>
-          <div className="checkbox-field field-full">
-            <Checkbox name="privacyConsent" value="on" required>
-              {labels.consent}
-            </Checkbox>
-            <FieldError state={state} name="privacyConsent" />
-          </div>
         </div>
       </fieldset>
       <SubmitButton labels={labels} />

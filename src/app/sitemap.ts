@@ -3,7 +3,7 @@ import {publishedServices} from '@/data/services';
 import {routing} from '@/i18n/routing';
 import {siteUrl} from '@/lib/site';
 
-const staticPaths = ['', '/services-rates', '/vehicles', '/routes', '/routes/bangkok', '/contact', '/booking'];
+const staticPaths = ['', '/services-rates', '/vehicles', '/routes', '/contact', '/booking'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const servicePaths = publishedServices.map((service) => `/services-rates/${service.slug}`);

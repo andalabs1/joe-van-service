@@ -7,16 +7,16 @@ export function DesignProvider({children}: {children: React.ReactNode}) {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#AF0C33',
-          colorInfo: '#AF0C33',
-          colorText: '#1a1a1a',
-          colorBorder: '#dedede',
+          colorPrimary: '#2D5A8D',
+          colorInfo: '#2D5A8D',
+          colorText: '#0E1B28',
+          colorBorder: '#A4B3C6',
           borderRadius: 14,
           fontFamily: 'var(--font-prompt), sans-serif'
         },
         components: {
-          Tabs: {inkBarColor: '#AF0C33', itemSelectedColor: '#AF0C33'},
-          Table: {headerBg: '#1a1a1a', headerColor: '#ffffff', rowHoverBg: '#F5F5F5'}
+          Tabs: {inkBarColor: '#2D5A8D', itemSelectedColor: '#2D5A8D'},
+          Table: {headerBg: '#0A274D', headerColor: '#ffffff', rowHoverBg: '#F3F5F6'}
         }
       }}
     >
