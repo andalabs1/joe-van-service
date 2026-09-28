@@ -5,33 +5,18 @@ import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {buildMetadata} from '@/lib/site';
 import {publishedServices} from '@/data/services';
-import {formatPrice} from '@/data/pricing';
 import {
-  getRouteVehiclePrices,
-  getVehicleStartingPrices,
   hourlyVehicleRates,
-  periodVehicleRates,
-  vehicleCategories
+  periodVehicleRates
 } from '@/data/vehicle-pricing';
-import {vehicleModels} from '@/data/vehicles';
+import {vehicleLuggageKey, vehicleModels, vehicleSeatFeatureKey, vehicleSeatsKey} from '@/data/vehicles';
+import {getVehicleStartingPrices} from '@/data/vehicle-pricing';
+import {formatPrice} from '@/data/pricing';
 import {featuredRoutes} from '@/data/routes';
-import {ArrowIcon, PinIcon, UsersIcon} from '@/components/icons';
+import {ArrowIcon, PinIcon} from '@/components/icons';
+import {VehicleCard} from '@/components/vehicle-card';
 
 type PageProps = {params: Promise<{locale: Locale}>};
-
-const useCaseKey: Record<(typeof vehicleCategories)[number], string> = {
-  vipVan: 'useVipVan',
-  shortVan: 'useShortVan',
-  suv: 'useSuv',
-  sedan: 'useSedan'
-};
-
-const seatKey: Record<(typeof vehicleCategories)[number], string> = {
-  vipVan: 'seats8',
-  shortVan: 'seats8',
-  suv: 'seats4To7',
-  sedan: 'seats3To4'
-};
 
 export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   const {locale} = await params;
@@ -47,11 +32,6 @@ export default async function ServicesPage({params}: PageProps) {
   const vehiclesT = await getTranslations({locale, namespace: 'Vehicles'});
   const routesT = await getTranslations({locale, namespace: 'Routes'});
   const bangkokT = await getTranslations({locale, namespace: 'Bangkok'});
-  const startingPrices = getVehicleStartingPrices();
-  const packageStarting = (prices: Record<string, number | null>) => {
-    const available = Object.values(prices).filter((price): price is number => price !== null);
-    return available.length ? Math.min(...available) : null;
-  };
   const splitColumns = <T,>(items: T[]) => {
     const half = Math.ceil(items.length / 2);
     return [items.slice(0, half), items.slice(half)];
@@ -80,20 +60,23 @@ export default async function ServicesPage({params}: PageProps) {
           <p>{vehiclesT('lead')}</p>
         </div>
         <div className="services-vehicle-grid">
-          {vehicleModels.map((model) => (
-            <article key={model.category} className="services-vehicle-card">
-              <div className="services-vehicle-image">
-                <Image src={model.image} alt={vehicle(model.category)} fill sizes="(max-width: 760px) 82vw, (max-width: 1000px) 45vw, 25vw" />
-              </div>
-              <div className="services-vehicle-body">
-                <h3>{vehicle(model.category)}</h3>
-                <p className="services-vehicle-meta"><UsersIcon />{vehiclesT(seatKey[model.category])}</p>
-                <p className="services-vehicle-use">{vehiclesT(useCaseKey[model.category])}</p>
-                <strong className="services-vehicle-price">{common('startingAt')} {formatPrice(startingPrices[model.category], locale)}</strong>
-                <Link href={`/booking?vehicle=${model.category}`} locale={locale} className="button button-dark button-wide">{vehiclesT('bookModel')}<ArrowIcon /></Link>
-              </div>
-            </article>
-          ))}
+          {vehicleModels.map((model) => {
+            const price = getVehicleStartingPrices()[model.category];
+            return (
+              <VehicleCard
+                key={model.category}
+                image={model.image}
+                title={vehicle(model.category)}
+                seats={vehiclesT(vehicleSeatsKey[model.category])}
+                luggage={vehiclesT(vehicleLuggageKey[model.category])}
+                seat={vehiclesT(vehicleSeatFeatureKey[model.category])}
+                price={price !== null ? `${common('startingAt')} ${formatPrice(price, locale)}` : common('requestQuote')}
+                href={`/booking?vehicle=${model.category}`}
+                locale={locale}
+                actionLabel={vehiclesT('detailsAndBook')}
+              />
+            );
+          })}
         </div>
       </section>
 
@@ -104,16 +87,12 @@ export default async function ServicesPage({params}: PageProps) {
             <Link href="/routes#route-rates" locale={locale} className="button button-ghost">{t('allRouteRates')}<ArrowIcon /></Link>
           </div>
           <div className="services-route-grid">
-            {featuredRoutes.slice(0, 8).map((route) => {
-              const availablePrices = Object.values(getRouteVehiclePrices(route.id)).filter((price): price is number => price !== null);
-              const lowestPrice = Math.min(...availablePrices);
-              return (
-                <article key={route.id} className="services-route-row">
-                  <div className="services-route-name"><PinIcon /><div><span>{t('fromBangkok')}</span><h3>{route.destination[locale]}</h3></div></div>
-                  <div className="services-route-facts"><span>{route.distanceKm} {common('km')}</span><strong>{common('startingAt')} {formatPrice(lowestPrice, locale)}</strong></div>
-                </article>
-              );
-            })}
+            {featuredRoutes.slice(0, 8).map((route) => (
+              <article key={route.id} className="services-route-row">
+                <div className="services-route-name"><PinIcon /><div><span>{t('fromBangkok')}</span><h3>{route.destination[locale]}</h3></div></div>
+                <div className="services-route-facts"><span>{route.distanceKm} {common('km')}</span></div>
+              </article>
+            ))}
           </div>
           <p className="services-route-note">{bangkokT('note')}</p>
         </div>
@@ -124,7 +103,6 @@ export default async function ServicesPage({params}: PageProps) {
         <div className="service-grid service-grid-large">
           {publishedServices.map((service) => (
             <article key={service.slug} className="service-card static-card">
-              <p className="price-kicker">{service.startingPrice ? `${common('startingAt')} ${formatPrice(service.startingPrice, locale)}` : common('requestQuote')}</p>
               <h3>{service.name[locale]}</h3>
               <p>{service.shortDescription[locale]}</p>
               <Link href={`/services-rates/${service.slug}`} locale={locale} className="text-link">{common('details')}<ArrowIcon /></Link>
@@ -138,21 +116,17 @@ export default async function ServicesPage({params}: PageProps) {
           <div className="shell">
             <div className="price-panel">
               <div className="price-panel-head">
-                <h2 id="hourly-title">{t('hourlyTitle')} <span>({vehiclesT('startingFrom')})</span></h2>
+                <h2 id="hourly-title">{t('hourlyTitle')}</h2>
                 <Link href="/booking" locale={locale}>{common('bookNow')} <span aria-hidden="true">›</span></Link>
               </div>
               <div className="price-panel-grid">
                 {splitColumns(hourlyVehicleRates).map((column, index) => (
                   <ul key={index}>
-                    {column.map((rate) => {
-                      const price = packageStarting(rate.prices);
-                      return (
-                        <li key={rate.hours} className="price-row">
-                          <span>{rate.hours} {t('hours')} ({rate.maxKm} {common('km')})</span>
-                          <strong>{price !== null ? formatPrice(price, locale) : common('requestQuote')}</strong>
-                        </li>
-                      );
-                    })}
+                    {column.map((rate) => (
+                      <li key={rate.hours} className="price-row">
+                        <span>{rate.hours} {t('hours')} ({rate.maxKm} {common('km')})</span>
+                      </li>
+                    ))}
                   </ul>
                 ))}
               </div>
@@ -162,25 +136,21 @@ export default async function ServicesPage({params}: PageProps) {
         </section>
         <section className="section shell" aria-labelledby="period-title">
           <div className="price-panel">
-            <div className="price-panel-head">
-              <h2 id="period-title">{t('periodTitle')} <span>({vehiclesT('startingFrom')})</span></h2>
-              <Link href="/booking" locale={locale}>{common('bookNow')} <span aria-hidden="true">›</span></Link>
-            </div>
-            <div className="price-panel-grid">
-              {splitColumns(periodVehicleRates).map((column, index) => (
-                <ul key={index}>
-                  {column.map((rate) => {
-                    const price = packageStarting(rate.prices);
-                    return (
+              <div className="price-panel-head">
+                <h2 id="period-title">{t('periodTitle')}</h2>
+                <Link href="/booking" locale={locale}>{common('bookNow')} <span aria-hidden="true">›</span></Link>
+              </div>
+              <div className="price-panel-grid">
+                {splitColumns(periodVehicleRates).map((column, index) => (
+                  <ul key={index}>
+                    {column.map((rate) => (
                       <li key={rate.days} className="price-row">
                         <span>{rate.days} {t('days')}</span>
-                        <strong>{price !== null ? formatPrice(price, locale) : common('requestQuote')}</strong>
                       </li>
-                    );
-                  })}
-                </ul>
-              ))}
-            </div>
+                    ))}
+                  </ul>
+                ))}
+              </div>
               <p className="price-panel-note">{t('notFinal')}</p>
             </div>
         </section>

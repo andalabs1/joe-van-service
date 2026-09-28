@@ -5,7 +5,6 @@ import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {buildMetadata} from '@/lib/site';
 import {bangkokRoutes, type BangkokRoute, type RouteRegion} from '@/data/routes';
-import {formatPrice} from '@/data/pricing';
 
 type PageProps = {
   params: Promise<{locale: Locale}>;
@@ -25,7 +24,6 @@ export default async function RoutesPage({params, searchParams}: PageProps) {
   const query = await searchParams;
   const t = await getTranslations({locale, namespace: 'Routes'});
   const rate = await getTranslations({locale, namespace: 'Bangkok'});
-  const common = await getTranslations({locale, namespace: 'Common'});
 
   const q = typeof query.q === 'string' ? query.q.trim().toLocaleLowerCase() : '';
   const regionLabels: Record<RouteRegion, string> = {
@@ -36,25 +34,15 @@ export default async function RoutesPage({params, searchParams}: PageProps) {
     south: rate('south')
   };
 
-  const startingPrice = (route: BangkokRoute) => {
-    if (route.prices.vanStandard !== null) return route.prices.vanStandard;
-    const available = Object.values(route.prices).filter((price): price is number => price !== null);
-    return available.length ? Math.min(...available) : null;
-  };
-
   const renderPanelRows = (routes: BangkokRoute[]) => {
     const half = Math.ceil(routes.length / 2);
     return [routes.slice(0, half), routes.slice(half)].map((column, index) => (
       <ul key={index}>
-        {column.map((route) => {
-          const price = startingPrice(route);
-          return (
-            <li key={route.id} className="price-row">
-              <span>{rate('origin')} → {route.destination[locale]}</span>
-              <strong>{price === null ? common('requestQuote') : formatPrice(price, locale)}</strong>
-            </li>
-          );
-        })}
+        {column.map((route) => (
+          <li key={route.id} className="price-row">
+            <span>{rate('origin')} → {route.destination[locale]}</span>
+          </li>
+        ))}
       </ul>
     ));
   };

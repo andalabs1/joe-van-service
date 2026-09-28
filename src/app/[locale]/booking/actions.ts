@@ -11,13 +11,24 @@ export type BookingState = {
 
 const bookingSchema = z.object({
   locale: z.enum(['th', 'en']),
-  pickupDate: z.string().min(1),
+  pickupDate: z
+    .string()
+    .min(1)
+    .refine(
+      (value) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selected = new Date(`${value}T00:00:00`);
+        return !Number.isNaN(selected.getTime()) && selected >= today;
+      },
+      {message: 'pickupDate must be today or a future date'}
+    ),
   pickupTime: z.string().min(1),
   origin: z.string().trim().min(2).max(160),
   destination: z.string().trim().min(2).max(160),
   tripType: z.enum(['one-way', 'round-trip', 'overnight']),
   passengers: z.coerce.number().int().min(1).max(50),
-  vehicleType: z.enum(['vipVan', 'shortVan', 'suv', 'sedan']),
+  vehicleType: z.enum(['commuter8', 'commuter10', 'newCommuter8', 'newCommuter10', 'suv', 'sedan']),
   luggage: z.string().trim().max(120).optional(),
   telephone: z.string().trim().min(8).max(30),
   lineId: z.string().trim().max(100).optional(),

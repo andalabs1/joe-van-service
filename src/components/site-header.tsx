@@ -5,12 +5,12 @@ import type {Locale} from '@/i18n/routing';
 import {vehicleModels} from '@/data/vehicles';
 import {LocaleSwitcher} from './locale-switcher';
 import {Logo} from './logo';
+import {MobileDrawer, type DrawerLink} from './mobile-drawer';
 import {
   AnchorIcon,
   ChevronDownIcon,
   CompassIcon,
   HomeIcon,
-  MenuIcon,
   SunriseIcon,
   SunsetIcon,
 } from './icons';
@@ -77,6 +77,31 @@ export async function SiteHeader({locale}: {locale: Locale}) {
     {href: '/routes', label: t('routes'), children: regionLinks},
     {href: '/contact', label: t('contact')}
   ];
+  const drawerLinks: DrawerLink[] = [
+    {href: '/', label: t('home')},
+    {href: '/services-rates', label: t('services')},
+    {
+      href: '/vehicles',
+      label: t('vehicles'),
+      children: vehicleModels.map((model) => ({
+        href: `/vehicles#vehicle-group-${model.group}`,
+        label: vehicle(model.category),
+        image: model.image
+      }))
+    },
+    {
+      href: '/routes',
+      label: t('routes'),
+      children: [
+        {href: '/routes#region-metropolitan', label: bangkok('metropolitan'), iconName: 'metropolitan'},
+        {href: '/routes#region-east', label: bangkok('east'), iconName: 'east'},
+        {href: '/routes#region-west', label: bangkok('west'), iconName: 'west'},
+        {href: '/routes#region-north-northeast', label: bangkok('northNortheast'), iconName: 'north-northeast'},
+        {href: '/routes#region-south', label: bangkok('south'), iconName: 'south'}
+      ]
+    },
+    {href: '/contact', label: t('contact')}
+  ];
 
   return (
     <header className="site-header">
@@ -98,7 +123,7 @@ export async function SiteHeader({locale}: {locale: Locale}) {
                 {link.children && (
                   <ul className="submenu" aria-label={link.label}>
                     {link.children.map((child) => (
-                      <li key={child.href}>
+                      <li key={`${child.href}-${child.label}`}>
                         <Link href={child.href} locale={locale}>
                           <ChildVisual child={child} />
                           <span>{child.label}</span>
@@ -117,28 +142,14 @@ export async function SiteHeader({locale}: {locale: Locale}) {
           </Suspense>
           <Link href="/booking" locale={locale} className="button button-small button-accent">{t('booking')}</Link>
         </div>
-        <details className="mobile-menu">
-          <summary aria-label="Menu"><MenuIcon /></summary>
-          <div className="mobile-menu-panel">
-            {links.map((link) => link.children ? (
-              <details key={link.href} className="mobile-submenu">
-                <summary>{link.label}<ChevronDownIcon /></summary>
-                <div className="mobile-submenu-links">
-                  <Link href={link.href} locale={locale} className="mobile-submenu-overview">{link.label}</Link>
-                  {link.children.map((child) => (
-                    <Link key={child.href} href={child.href} locale={locale}>
-                      <ChildVisual child={child} />
-                      <span>{child.label}</span>
-                    </Link>
-                  ))}
-                </div>
-              </details>
-            ) : (
-              <Link key={link.href} href={link.href} locale={locale}>{link.label}</Link>
-            ))}
-            <Link href="/booking" locale={locale} className="button button-accent">{t('booking')}</Link>
-          </div>
-        </details>
+        <MobileDrawer
+          locale={locale}
+          links={drawerLinks}
+          bookingLabel={t('booking')}
+          languageLabels={{th: t('thai'), en: t('english'), aria: t('language')}}
+          menuLabel={locale === 'th' ? 'เมนู' : 'Menu'}
+          closeLabel={locale === 'th' ? 'ปิดเมนู' : 'Close menu'}
+        />
       </div>
     </header>
   );

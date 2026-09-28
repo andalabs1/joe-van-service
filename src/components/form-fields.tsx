@@ -31,6 +31,14 @@ export function FormDatePicker({
         placeholder={placeholder}
         aria-label={ariaLabel}
         style={{width: '100%'}}
+        disabledDate={(current) => {
+          if (!current) return false;
+          const selected = current.toDate();
+          selected.setHours(0, 0, 0, 0);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          return selected < today;
+        }}
         onChange={(_date, dateString) => setValue(toHidden(dateString))}
       />
       <input type="hidden" name={name} value={value} />

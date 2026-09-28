@@ -22,7 +22,8 @@ import {
   FiStar,
   FiSunrise,
   FiSunset,
-  FiUsers
+  FiUsers,
+  FiX
 } from 'react-icons/fi';
 
 function decorative(Icon: IconType): IconType {
@@ -55,3 +56,4 @@ export const SunriseIcon = decorative(FiSunrise);
 export const SunsetIcon = decorative(FiSunset);
 export const LineIcon = decorative(FaLine);
 export const WhatsappIcon = decorative(FaWhatsapp);
+export const CloseIcon = decorative(FiX);

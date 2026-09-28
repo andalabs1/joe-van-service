@@ -1,13 +1,11 @@
-import Image from 'next/image';
 import type {Metadata} from 'next';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {buildMetadata} from '@/lib/site';
-import {formatPrice} from '@/data/pricing';
-import {getVehicleStartingPrices, vehicleCategories, vehicleGroups} from '@/data/vehicle-pricing';
-import {vehicleModelsByGroup, type VehicleGroupKey} from '@/data/vehicles';
-import {ArrowIcon} from '@/components/icons';
+import {vehicleCategories, vehicleGroups} from '@/data/vehicle-pricing';
+import {vehicleLuggageKey, vehicleModelsByGroup, vehicleSeatFeatureKey, vehicleSeatsKey, type VehicleGroupKey} from '@/data/vehicles';import {ArrowIcon} from '@/components/icons';
+import {VehicleCard} from '@/components/vehicle-card';
 
 type PageProps = {params: Promise<{locale: Locale}>};
 
@@ -17,26 +15,11 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
   return buildMetadata({locale, path: '/vehicles', title: t('vehiclesTitle'), description: t('vehiclesDescription')});
 }
 
-const useCaseKey: Record<(typeof vehicleCategories)[number], string> = {
-  vipVan: 'useVipVan',
-  shortVan: 'useShortVan',
-  suv: 'useSuv',
-  sedan: 'useSedan'
-};
-
-const seatKey: Record<(typeof vehicleCategories)[number], string> = {
-  vipVan: 'seats8',
-  shortVan: 'seats8',
-  suv: 'seats4To7',
-  sedan: 'seats3To4'
-};
-
 export default async function VehiclesPage({params}: PageProps) {
   const {locale} = await params;
   const t = await getTranslations({locale, namespace: 'Vehicles'});
   const common = await getTranslations({locale, namespace: 'Common'});
   const vehicle = await getTranslations({locale, namespace: 'Vehicle'});
-  const starting = getVehicleStartingPrices();
 
   const itemList = {
     '@context': 'https://schema.org',
@@ -44,10 +27,7 @@ export default async function VehiclesPage({params}: PageProps) {
     itemListElement: vehicleCategories.map((category, index) => ({
       '@type': 'ListItem',
       position: index + 1,
-      name: vehicle(category),
-      ...(starting[category] !== null
-        ? {offers: {'@type': 'Offer', priceCurrency: 'THB', price: starting[category]}}
-        : {})
+      name: vehicle(category)
     }))
   };
 
@@ -63,55 +43,24 @@ export default async function VehiclesPage({params}: PageProps) {
             <p>{t('illustration')}</p>
           </div>
           <div className="vehicle-model-grid vehicle-page-grid">
-            {vehicleModelsByGroup[group.key as VehicleGroupKey].map((model) => {
-              const price = starting[model.category];
-              return (
-                <article key={model.category} className="vehicle-model-card vehicle-page-card">
-                  <div className="vehicle-model-image"><Image src={model.image} alt={vehicle(model.category)} fill sizes="(max-width: 760px) 82vw, 25vw" /></div>
-                  <h3>{vehicle(model.category)}</h3>
-                  <p className="vehicle-spec-pending">{t(seatKey[model.category])}</p>
-                  <p className="vehicle-best-for"><strong>{t('bestFor')}: </strong>{t(useCaseKey[model.category])}</p>
-                  <span className="vehicle-card-foot">
-                    <strong className="price-kicker vehicle-starting">
-                      {price !== null ? `${common('startingAt')} ${formatPrice(price, locale)}` : common('requestQuote')}
-                    </strong>
-                    <Link href={`/booking?vehicle=${model.category}`} locale={locale} className="text-link">{t('bookModel')}<ArrowIcon /></Link>
-                  </span>
-                </article>
-              );
-            })}
+            {vehicleModelsByGroup[group.key as VehicleGroupKey].map((model) => (
+              <VehicleCard
+                key={model.category}
+                image={model.image}
+                title={vehicle(model.category)}
+                seats={t(vehicleSeatsKey[model.category])}
+                luggage={t(vehicleLuggageKey[model.category])}
+                seat={t(vehicleSeatFeatureKey[model.category])}
+                href={`/booking?vehicle=${model.category}`}
+                locale={locale}
+                actionLabel={t('detailsAndBook')}
+              />
+            ))}
           </div>
         </section>
       ))}
 
-      <section className="section section-muted" aria-labelledby="compare-title">
-        <div className="shell">
-          <div className="price-panel">
-            <div className="price-panel-head">
-              <h2 id="compare-title">{t('compareTitle')} <span>({t('startingFrom')})</span></h2>
-              <Link href="/booking" locale={locale}>{common('bookNow')} <span aria-hidden="true">›</span></Link>
-            </div>
-            <div className="price-panel-grid">
-              {[vehicleCategories.slice(0, 2), vehicleCategories.slice(2)].map((column, index) => (
-                <ul key={index}>
-                  {column.map((category) => {
-                    const price = starting[category];
-                    return (
-                      <li key={category} className="price-row">
-                        <span>{vehicle(category)} · {t(seatKey[category])}</span>
-                        <strong>{price !== null ? formatPrice(price, locale) : common('requestQuote')}</strong>
-                      </li>
-                    );
-                  })}
-                </ul>
-              ))}
-            </div>
-            <p className="price-panel-note">{t('note')}</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="cta-band cta-premium"><div className="shell cta-inner"><div><p className="eyebrow">{common('referencePrice')}</p><h2>{t('ctaTitle')}</h2><p>{t('ctaText')}</p></div><Link href="/booking" locale={locale} className="button button-dark">{common('bookNow')}<ArrowIcon /></Link></div></section>
+      <section className="cta-band cta-premium"><div className="shell cta-inner"><div><p className="eyebrow">{t('eyebrow')}</p><h2>{t('ctaTitle')}</h2><p>{t('ctaText')}</p></div><Link href="/booking" locale={locale} className="button button-dark">{common('bookNow')}<ArrowIcon /></Link></div></section>
     </>
   );
 }

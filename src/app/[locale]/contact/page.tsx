@@ -3,8 +3,8 @@ import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
-import {buildMetadata, contactEmail, lineUrl, phone} from '@/lib/site';
-import {ArrowIcon, HeartIcon, LineIcon, MailIcon, PhoneIcon, PinIcon, ShieldIcon, StarIcon, UsersIcon} from '@/components/icons';
+import {buildMetadata, contactEmail, lineUrl, phone, whatsappUrl} from '@/lib/site';
+import {ArrowIcon, HeartIcon, LineIcon, MailIcon, PhoneIcon, PinIcon, ShieldIcon, StarIcon, UsersIcon, WhatsappIcon} from '@/components/icons';
 import {ContactForm} from '@/components/contact-form';
 import { FaCheck } from 'react-icons/fa6';
 
@@ -61,16 +61,23 @@ export default async function ContactPage({params}: PageProps) {
             <ul className="contact-list">
               <li><PhoneIcon /><div><span>{t('phoneTitle')}</span><a href={`tel:${phone}`}>099-924-1591</a></div></li>
               <li><LineIcon /><div><span>LINE</span><a href={lineUrl} target="_blank" rel="noreferrer">@385hqvbc</a></div></li>
+              <li><WhatsappIcon /><div><span>WhatsApp</span><a href={whatsappUrl} target="_blank" rel="noreferrer">099-924-1591</a></div></li>
               <li><MailIcon /><div><span>Email</span><a href={`mailto:${contactEmail}`}>{contactEmail}</a></div></li>
             </ul>
-            <a href={lineUrl} target="_blank" rel="noreferrer" className="contact-inline-qr">
-              <span className="contact-inline-qr-image"><Image src="/line-qr.jpg" alt={t('lineQrAlt')} fill sizes="180px" /></span>
-              <strong><LineIcon />{t('addLine')}</strong>
-            </a>
+            <div className="contact-qr-row">
+              <a href={lineUrl} target="_blank" rel="noreferrer" className="contact-inline-qr">
+                <span className="contact-inline-qr-image"><Image src="/line-qr.jpg" alt={t('lineQrAlt')} fill sizes="180px" /></span>
+                <strong><LineIcon />{t('addLine')}</strong>
+              </a>
+              <a href={whatsappUrl} target="_blank" rel="noreferrer" className="contact-inline-qr">
+                <span className="contact-inline-qr-image"><Image src="/whatsapp-qr.jpg" alt={t('whatsappQrAlt')} fill sizes="180px" /></span>
+                <strong><WhatsappIcon />{t('addWhatsapp')}</strong>
+              </a>
+            </div>
           </div>
         </article>
 
-        <article className="contact-panel service-area-panel">
+        <article className="contact-panel service-area-panel h-fit">
           <h2 className='font-medium'>{t('areaHeading')}</h2>
           <ul className="service-area-list">
             <li><PinIcon fill='#0A274D' className="text-white" />{t('areaBangkok')}</li>

@@ -9,15 +9,17 @@ export type VehicleModel = {
 };
 
 const groupImage: Record<VehicleGroupKey, string> = {
-  van: '/model-mpv-van.png',
-  passengerCar: '/model-car-suv.png'
+  van: '/van-8.jpg',
+  passengerCar: '/sedan.jpg'
 };
 
 const categoryImage: Record<VehicleCategory, string> = {
-  vipVan: '/model-mpv-van1.png',
-  shortVan: '/model-mpv-van.png',
-  suv: '/model-car-suv.png',
-  sedan: '/model-limousine.png'
+  commuter8: '/van-8.jpg',
+  commuter10: '/van-9.jpg',
+  newCommuter8: '/van-8.jpg',
+  newCommuter10: '/van-9.jpg',
+  suv: '/suv.jpg',
+  sedan: '/sedan.jpg'
 };
 
 const categoryGroup = (category: VehicleCategory): VehicleGroupKey => {
@@ -34,4 +36,42 @@ export const vehicleModels: VehicleModel[] = vehicleCategories.map((category) =>
 export const vehicleModelsByGroup: Record<VehicleGroupKey, VehicleModel[]> = {
   van: vehicleModels.filter((model) => model.group === 'van'),
   passengerCar: vehicleModels.filter((model) => model.group === 'passengerCar')
+};
+
+// Message keys in the `Vehicles` namespace so every vehicle card
+// (home, vehicles page, services page) shows the same spec rows.
+export const vehicleSeatsKey: Record<VehicleCategory, string> = {
+  commuter8: 'seats8',
+  commuter10: 'seats9To10',
+  newCommuter8: 'seats8',
+  newCommuter10: 'seats9To10',
+  suv: 'seats7',
+  sedan: 'seats5'
+};
+
+export const vehicleLuggageKey: Record<VehicleCategory, string> = {
+  commuter8: 'luggageCommuter8',
+  commuter10: 'luggageCommuter10',
+  newCommuter8: 'luggageNewCommuter8',
+  newCommuter10: 'luggageNewCommuter10',
+  suv: 'luggageSuv',
+  sedan: 'luggageSedan'
+};
+
+export const vehicleSeatFeatureKey: Record<VehicleCategory, string> = {
+  commuter8: 'seatCommuter8',
+  commuter10: 'seatCommuter10',
+  newCommuter8: 'seatNewCommuter8',
+  newCommuter10: 'seatNewCommuter10',
+  suv: 'seatSuv',
+  sedan: 'seatSedan'
+};
+
+export const vehicleUseKey: Record<VehicleCategory, string> = {
+  commuter8: 'useCommuter8',
+  commuter10: 'useCommuter10',
+  newCommuter8: 'useNewCommuter8',
+  newCommuter10: 'useNewCommuter10',
+  suv: 'useSuv',
+  sedan: 'useSedan'
 };

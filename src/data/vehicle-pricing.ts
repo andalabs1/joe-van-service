@@ -1,5 +1,5 @@
 export const vehicleCategories = [
-  'vipVan', 'shortVan', 'suv', 'sedan'
+  'commuter8', 'commuter10', 'newCommuter8', 'newCommuter10', 'suv', 'sedan'
 ] as const;
 
 export type VehicleCategory = (typeof vehicleCategories)[number];
@@ -12,24 +12,30 @@ type LegacyPriceTuple = readonly [
 ];
 
 export const vehicleGroups = [
-  {key: 'van', categories: vehicleCategories.slice(0, 2)},
-  {key: 'passengerCar', categories: vehicleCategories.slice(2, 4)}
+  {key: 'van', categories: vehicleCategories.slice(0, 4)},
+  {key: 'passengerCar', categories: vehicleCategories.slice(4, 6)}
 ] as const;
 
 export const vehicleStartingPrices: Record<VehicleCategory, number> = {
-  vipVan: 2500,
-  shortVan: 2500,
-  suv: 2800,
-  sedan: 1800
+  commuter8: 2500,
+  commuter10: 2000,
+  newCommuter8: 3500,
+  newCommuter10: 3000,
+  suv: 1500,
+  sedan: 1500
 };
 
 const withMinimum = (value: number | null, minimum: number) => value === null ? null : Math.max(value, minimum);
 
 // The supplied reference-rate dataset used the former 14-column fleet taxonomy.
-// Keep its route figures while exposing only the four current bookable vehicle types.
+// Keep its route figures while exposing only the six current bookable vehicle types.
+// Van tiers map onto the ascending legacy van columns (standard → executive →
+// electric MPV → premium) so the four van models stay price-ordered.
 const toPrices = (values: LegacyPriceTuple): VehiclePrices => ({
-  vipVan: withMinimum(values[7], vehicleStartingPrices.vipVan),
-  shortVan: withMinimum(values[6], vehicleStartingPrices.shortVan),
+  commuter10: withMinimum(values[6], vehicleStartingPrices.commuter10),
+  commuter8: withMinimum(values[7], vehicleStartingPrices.commuter8),
+  newCommuter10: withMinimum(values[8] ?? values[9], vehicleStartingPrices.newCommuter10),
+  newCommuter8: withMinimum(values[9], vehicleStartingPrices.newCommuter8),
   suv: withMinimum(values[2], vehicleStartingPrices.suv),
   sedan: withMinimum(values[0], vehicleStartingPrices.sedan)
 });
