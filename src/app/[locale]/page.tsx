@@ -105,10 +105,10 @@ export default async function HomePage({params}: PageProps) {
             <h1>{t('heroTitlePrefix')} <span className="hero-vip-accent">{t('heroTitleAccent')}</span></h1>
             <p className="hero-lead hero-vip-lead">{t('heroSubtitle')}</p>
             <div className="hero-cta-row">
-              <Link href="/booking" locale={locale} className="hero-cta hero-cta-book"><CalendarIcon />{t('heroBook')}</Link>
-              <a href={lineUrl} target="_blank" rel="noopener noreferrer" className="hero-cta hero-cta-line"><LineIcon />{t('heroLine')}</a>
-              <a href={`tel:${phone.replaceAll('-', '').replaceAll(' ', '')}`} className="hero-cta hero-cta-call"><PhoneIcon />{t('heroCall')}</a>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hero-cta hero-cta-whatsapp"><WhatsappIcon />{t('heroWhatsapp')}</a>
+              <Link href="/booking" locale={locale} className="hero-cta hero-cta-book" aria-label={t('heroBook')}><CalendarIcon /><span className="hero-cta-label">{t('heroBook')}</span></Link>
+              <a href={lineUrl} target="_blank" rel="noopener noreferrer" className="hero-cta hero-cta-line" aria-label={t('heroLine')}><LineIcon /><span className="hero-cta-label">{t('heroLine')}</span></a>
+              <a href={`tel:${phone.replaceAll('-', '').replaceAll(' ', '')}`} className="hero-cta hero-cta-call" aria-label={t('heroCall')}><PhoneIcon /><span className="hero-cta-label">{t('heroCall')}</span></a>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hero-cta hero-cta-whatsapp" aria-label={t('heroWhatsapp')}><WhatsappIcon /><span className="hero-cta-label">{t('heroWhatsapp')}</span></a>
             </div>
           </div>
         </div>

@@ -4,7 +4,6 @@ import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {buildMetadata} from '@/lib/site';
-import {publishedServices} from '@/data/services';
 import {
   hourlyVehicleRates,
   periodVehicleRates
@@ -95,19 +94,6 @@ export default async function ServicesPage({params}: PageProps) {
             ))}
           </div>
           <p className="services-route-note">{bangkokT('note')}</p>
-        </div>
-      </section>
-
-      <section className="section shell" aria-labelledby="service-types-title">
-        <div className="section-heading"><p className="eyebrow">{t('eyebrow')}</p><h2 id="service-types-title">{t('serviceTypesTitle')}</h2><p>{t('serviceTypesLead')}</p></div>
-        <div className="service-grid service-grid-large">
-          {publishedServices.map((service) => (
-            <article key={service.slug} className="service-card static-card">
-              <h3>{service.name[locale]}</h3>
-              <p>{service.shortDescription[locale]}</p>
-              <Link href={`/services-rates/${service.slug}`} locale={locale} className="text-link">{common('details')}<ArrowIcon /></Link>
-            </article>
-          ))}
         </div>
       </section>
 

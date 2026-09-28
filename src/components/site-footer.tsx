@@ -1,7 +1,6 @@
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
-import {publishedServices} from '@/data/services';
 import {vehicleModels} from '@/data/vehicles';
 import {Logo} from './logo';
 
@@ -25,16 +24,6 @@ export async function SiteFooter({locale}: {locale: Locale}) {
           <div className="footer-brand"><Logo locale={locale} label={t('home')} /></div>
           <p>{footer('summary')}</p>
         </div>
-        <nav className="footer-col" aria-label={t('services')}>
-          <Link href="/services-rates" locale={locale} className="footer-heading">{t('services')}</Link>
-          <ul>
-            {publishedServices.map((service) => (
-              <li key={service.slug}>
-                <Link href={`/services-rates/${service.slug}`} locale={locale}>{service.name[locale]}</Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
         <nav className="footer-col" aria-label={t('vehicles')}>
           <Link href="/vehicles" locale={locale} className="footer-heading">{t('vehicles')}</Link>
           <ul>
@@ -48,9 +37,6 @@ export async function SiteFooter({locale}: {locale: Locale}) {
         <nav className="footer-col" aria-label={t('routes')}>
           <Link href="/routes" locale={locale} className="footer-heading">{t('routes')}</Link>
           <ul>
-            <li>
-              <Link href="/routes#route-rates" locale={locale}>{bangkok('title')}</Link>
-            </li>
             {regions.map((region) => (
               <li key={region.value}>
                 <Link href={`/routes#region-${region.value}`} locale={locale}>{region.label}</Link>
@@ -62,6 +48,8 @@ export async function SiteFooter({locale}: {locale: Locale}) {
       <div className="shell footer-bottom">
         <p>{footer('pricing')}</p>
         <div className="footer-bottom-links">
+          <Link href="/" locale={locale}>{t('home')}</Link>
+          <Link href="/services-rates" locale={locale}>{t('services')}</Link>
           <Link href="/contact" locale={locale}>{t('contact')}</Link>
           <Link href="/booking" locale={locale}>{t('booking')}</Link>
         </div>
