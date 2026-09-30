@@ -3,14 +3,8 @@
 import {useEffect, useRef, useState} from 'react';
 import {useTranslations} from 'next-intl';
 import type {Locale} from '@/i18n/routing';
-import {lineUrl, phone, whatsappUrl} from '@/lib/site';
+import {lineId, lineUrl, phone, phoneDisplay, whatsappDisplay, whatsappUrl} from '@/lib/site';
 import {CloseIcon, LineIcon, PhoneIcon, WhatsappIcon} from './icons';
-
-function formatPhoneDisplay(value: string): string {
-  const digits = value.replaceAll(/\D/g, '');
-  if (digits.length === 10) return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
-  return value;
-}
 
 export function FloatingContact({locale}: {locale: Locale}) {
   void locale;
@@ -37,10 +31,10 @@ export function FloatingContact({locale}: {locale: Locale}) {
   const items = [
     {
       key: 'phone',
-      href: `tel:${phone.replaceAll(/\s/g, '').replaceAll('-', '')}`,
+      href: `tel:${phone}`,
       icon: PhoneIcon,
       label: t('call'),
-      sub: formatPhoneDisplay(phone),
+      sub: phoneDisplay,
       className: 'floating-contact-item is-phone'
     },
     {
@@ -48,7 +42,7 @@ export function FloatingContact({locale}: {locale: Locale}) {
       href: lineUrl,
       icon: LineIcon,
       label: t('line'),
-      sub: '@385hqvbc',
+      sub: lineId,
       className: 'floating-contact-item is-line',
       external: true
     },
@@ -57,7 +51,7 @@ export function FloatingContact({locale}: {locale: Locale}) {
       href: whatsappUrl,
       icon: WhatsappIcon,
       label: 'WhatsApp',
-      sub: formatPhoneDisplay(phone),
+      sub: whatsappDisplay,
       className: 'floating-contact-item is-whatsapp',
       external: true
     }

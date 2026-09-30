@@ -1,7 +1,8 @@
 'use client';
 
-import {useActionState} from 'react';
+import {useActionState, useEffect, useRef} from 'react';
 import {useFormStatus} from 'react-dom';
+import {toast} from 'sonner';
 import {Input} from 'antd';
 import {submitBooking, type BookingState} from '@/app/[locale]/booking/actions';
 import type {Locale} from '@/i18n/routing';
@@ -58,19 +59,31 @@ export function BookingForm({
   defaults: {origin?: string; destination?: string; vehicle?: string; notes?: string};
 }) {
   const [state, formAction] = useActionState(submitBooking, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+  const lastToastRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!state.message) return;
+    const key = `${state.status}:${state.message}`;
+    if (lastToastRef.current === key) return;
+    lastToastRef.current = key;
+
+    if (state.status === 'success') {
+      toast.success(state.message);
+      formRef.current?.reset();
+    } else if (state.status === 'unconfigured') {
+      toast.warning(state.message);
+    } else if (state.status === 'error') {
+      toast.error(state.message);
+    }
+  }, [state.message, state.status]);
 
   return (
-    <form action={formAction} className="booking-form">
+    <form ref={formRef} action={formAction} className="booking-form">
       <input type="hidden" name="locale" value={locale} />
       <div className="honeypot" aria-hidden="true">
         <label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
       </div>
-
-      {state.message && (
-        <div className={`form-status form-status-${state.status}`} role="status">
-          {state.message}
-        </div>
-      )}
 
       <fieldset>
         <legend>{labels.tripTitle}</legend>

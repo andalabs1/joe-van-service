@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import type {Metadata} from 'next';
 import {getTranslations} from 'next-intl/server';
+import {ArrowIcon} from '@/components/icons';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {buildMetadata} from '@/lib/site';
@@ -8,7 +9,6 @@ import {bangkokRoutes, type BangkokRoute, type RouteRegion} from '@/data/routes'
 
 type PageProps = {
   params: Promise<{locale: Locale}>;
-  searchParams: Promise<{q?: string | string[]}>;
 };
 
 export async function generateMetadata({params}: PageProps): Promise<Metadata> {
@@ -19,13 +19,11 @@ export async function generateMetadata({params}: PageProps): Promise<Metadata> {
 
 const regions: RouteRegion[] = ['metropolitan', 'east', 'west', 'north-northeast', 'south'];
 
-export default async function RoutesPage({params, searchParams}: PageProps) {
+export default async function RoutesPage({params}: PageProps) {
   const {locale} = await params;
-  const query = await searchParams;
   const t = await getTranslations({locale, namespace: 'Routes'});
   const rate = await getTranslations({locale, namespace: 'Bangkok'});
 
-  const q = typeof query.q === 'string' ? query.q.trim().toLocaleLowerCase() : '';
   const regionLabels: Record<RouteRegion, string> = {
     metropolitan: rate('metropolitan'),
     east: rate('east'),
@@ -41,18 +39,24 @@ export default async function RoutesPage({params, searchParams}: PageProps) {
         {column.map((route) => (
           <li key={route.id} className="price-row">
             <span>{rate('origin')} → {route.destination[locale]}</span>
+            <Link
+              href={`/booking?origin=bangkok&destination=${route.id}`}
+              locale={locale}
+              className="route-booking-link"
+              aria-label={locale === 'th' ? `จองเส้นทางกรุงเทพฯ ไป${route.destination.th}` : `Book Bangkok to ${route.destination.en}`}
+            >
+              <ArrowIcon />
+            </Link>
           </li>
         ))}
       </ul>
     ));
   };
 
-  const searchResults = q ? bangkokRoutes.filter((route) => `${route.destination.th} ${route.destination.en}`.toLocaleLowerCase().includes(q)) : [];
-
   return (
     <>
       <section className="routes-hero">
-        <Image src="/full-van.jpg" alt="" fill priority sizes="100vw" className="routes-hero-image" />
+        <Image src="/routes-map-hero.webp" alt="" fill priority sizes="100vw" className="routes-hero-image" />
         <div className="routes-hero-overlay" />
         <div className="shell routes-hero-content"><p className="eyebrow light">{t('eyebrow')}</p><h1>{t('title')}</h1><p>{t('lead')}</p></div>
       </section>
@@ -62,19 +66,6 @@ export default async function RoutesPage({params, searchParams}: PageProps) {
         <nav className="region-chips" aria-label={rate('regionLabel')}>
           {regions.map((region) => <a key={region} href={`#region-${region}`}>{regionLabels[region]}</a>)}
         </nav>
-        <form method="get" className="route-search" role="search">
-          <label><span>{rate('searchLabel')}</span><input type="search" name="q" defaultValue={q} placeholder={rate('searchPlaceholder')} /></label>
-          <button className="button button-dark" type="submit">{rate('filter')}</button>
-          {q && <Link href="/routes" locale={locale} className="clear-link">{rate('clear')}</Link>}
-        </form>
-        {q && (
-          <div className="route-search-results">
-            <div className="price-panel">
-              <div className="price-panel-head"><h2>{rate('results', {count: searchResults.length})}</h2></div>
-              {searchResults.length ? <div className="price-panel-grid">{renderPanelRows(searchResults)}</div> : <div className="empty-state"><h2>{rate('noResults')}</h2><Link href="/routes" locale={locale}>{rate('clear')}</Link></div>}
-            </div>
-          </div>
-        )}
       </section>
 
       {regions.map((region) => {

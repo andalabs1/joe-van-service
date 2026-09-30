@@ -17,10 +17,10 @@ export const vehicleGroups = [
 ] as const;
 
 export const vehicleStartingPrices: Record<VehicleCategory, number> = {
-  commuter8: 2500,
+  commuter8: 2000,
   commuter10: 2000,
-  newCommuter8: 3500,
-  newCommuter10: 3000,
+  newCommuter8: 2500,
+  newCommuter10: 2500,
   suv: 1500,
   sedan: 1500
 };

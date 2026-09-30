@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
-import {BriefcaseIcon, PinIcon, UsersIcon} from '@/components/icons';
+import {BriefcaseIcon, CarIcon, UsersIcon} from '@/components/icons';
 
 export function VehicleCard({
   image,
@@ -12,7 +12,8 @@ export function VehicleCard({
   price,
   href,
   locale,
-  actionLabel
+  actionLabel,
+  badge
 }: {
   image: string;
   title: string;
@@ -23,9 +24,16 @@ export function VehicleCard({
   href: string;
   locale: Locale;
   actionLabel: string;
+  badge?: string;
 }) {
   return (
     <article className="vehicle-card">
+      {badge && (
+        <p className="vehicle-card-badge">
+          <span aria-hidden="true" className="vehicle-card-badge-icon">%</span>
+          {badge}
+        </p>
+      )}
       <div className="vehicle-card-image">
         <Image src={image} alt={title} fill sizes="(max-width: 760px) 82vw, (max-width: 1000px) 45vw, 30vw" />
       </div>
@@ -34,10 +42,11 @@ export function VehicleCard({
         <ul className="vehicle-card-specs">
           <li><UsersIcon />{seats}</li>
           <li><BriefcaseIcon />{luggage}</li>
-          <li><PinIcon />{seat}</li>
+          <li><CarIcon />{seat}</li>
         </ul>
-        {price && <p className="vehicle-card-price">{price}</p>}
-        <Link href={href} locale={locale} className="button button-dark button-wide vehicle-card-button">{actionLabel}</Link>
+        <Link href={href} locale={locale} className="vehicle-card-button">
+          {price ? `${actionLabel} (${price})` : actionLabel}
+        </Link>
       </div>
     </article>
   );

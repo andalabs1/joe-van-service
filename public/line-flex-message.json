@@ -1,0 +1,81 @@
+{
+  "type": "flex",
+  "altText": "MongKon RideMate รถเช่าพร้อมคนขับ VIP โทร 099-924-1591",
+  "contents": {
+    "type": "bubble",
+    "hero": {
+      "type": "image",
+      "url": "https://joe-van-service.vercel.app/hero-16.webp",
+      "size": "full",
+      "aspectRatio": "20:13",
+      "aspectMode": "cover",
+      "action": {
+        "type": "uri",
+        "label": "โทรเลย",
+        "uri": "tel:0999241591"
+      }
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "text",
+          "text": "MONGKON RIDEMATE",
+          "size": "xs",
+          "color": "#E9CDA3",
+          "weight": "bold"
+        },
+        {
+          "type": "text",
+          "text": "รถเช่าพร้อมคนขับ VIP",
+          "size": "xl",
+          "weight": "bold",
+          "wrap": true
+        },
+        {
+          "type": "text",
+          "text": "เดินทางสะดวก ปลอดภัย สบายใจ ด้วยทีมคนขับมืออาชีพ",
+          "size": "sm",
+          "color": "#737F8F",
+          "wrap": true
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "spacing": "sm",
+      "contents": [
+        {
+          "type": "button",
+          "style": "primary",
+          "color": "#0A274D",
+          "action": {
+            "type": "uri",
+            "label": "โทร 099-924-1591",
+            "uri": "tel:0999241591"
+          }
+        },
+        {
+          "type": "button",
+          "style": "secondary",
+          "action": {
+            "type": "uri",
+            "label": "แชท LINE",
+            "uri": "https://line.me/R/ti/p/@385hqvbc"
+          }
+        },
+        {
+          "type": "button",
+          "style": "link",
+          "action": {
+            "type": "uri",
+            "label": "จองรถออนไลน์",
+            "uri": "https://joe-van-service.vercel.app/th/booking"
+          }
+        }
+      ]
+    }
+  }
+}

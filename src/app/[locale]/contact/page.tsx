@@ -3,7 +3,7 @@ import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
-import {buildMetadata, contactEmail, lineUrl, phone, whatsappUrl} from '@/lib/site';
+import {buildMetadata, contactEmail, lineId, lineUrl, phone, phoneDisplay, whatsappDisplay, whatsappUrl} from '@/lib/site';
 import {ArrowIcon, HeartIcon, LineIcon, MailIcon, PhoneIcon, PinIcon, ShieldIcon, StarIcon, UsersIcon, WhatsappIcon} from '@/components/icons';
 import {ContactForm} from '@/components/contact-form';
 import { FaCheck } from 'react-icons/fa6';
@@ -59,9 +59,9 @@ export default async function ContactPage({params}: PageProps) {
           <p className="contact-panel-lead">{t('lead')}</p>
           <div className="contact-info-body">
             <ul className="contact-list">
-              <li><PhoneIcon /><div><span>{t('phoneTitle')}</span><a href={`tel:${phone}`}>099-924-1591</a></div></li>
-              <li><LineIcon /><div><span>LINE</span><a href={lineUrl} target="_blank" rel="noreferrer">@385hqvbc</a></div></li>
-              <li><WhatsappIcon /><div><span>WhatsApp</span><a href={whatsappUrl} target="_blank" rel="noreferrer">099-924-1591</a></div></li>
+              <li><PhoneIcon /><div><span>{t('phoneTitle')}</span><a href={`tel:${phone}`}>{phoneDisplay}</a></div></li>
+              <li><LineIcon /><div><span>LINE</span><a href={lineUrl} target="_blank" rel="noreferrer">{lineId}</a></div></li>
+              <li><WhatsappIcon /><div><span>WhatsApp</span><a href={whatsappUrl} target="_blank" rel="noreferrer">{whatsappDisplay}</a></div></li>
               <li><MailIcon /><div><span>Email</span><a href={`mailto:${contactEmail}`}>{contactEmail}</a></div></li>
             </ul>
             <div className="contact-qr-row">

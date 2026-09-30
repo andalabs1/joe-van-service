@@ -1,5 +1,5 @@
 import type {IconType} from 'react-icons';
-import {FaLine, FaWhatsapp} from 'react-icons/fa6';
+import {FaCar, FaLine, FaWhatsapp} from 'react-icons/fa6';
 import {
   FiAnchor,
   FiArrowRight,
@@ -56,4 +56,5 @@ export const SunriseIcon = decorative(FiSunrise);
 export const SunsetIcon = decorative(FiSunset);
 export const LineIcon = decorative(FaLine);
 export const WhatsappIcon = decorative(FaWhatsapp);
+export const CarIcon = decorative(FaCar);
 export const CloseIcon = decorative(FiX);

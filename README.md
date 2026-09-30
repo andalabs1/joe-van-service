@@ -22,10 +22,9 @@ npm run build
 
 Copy `.env.example` to `.env.local` and provide the confirmed production values:
 
-- `NEXT_PUBLIC_SITE_URL`
-- `NEXT_PUBLIC_PHONE`
-- `NEXT_PUBLIC_LINE_URL`
 - `BOOKING_WEBHOOK_URL`
+
+Contact info (phone / LINE / WhatsApp / site URL) lives in `src/lib/global.ts` — no env needed.
 
 The booking form intentionally returns a configuration notice until `BOOKING_WEBHOOK_URL` is set. It never claims that an enquiry was delivered when no receiver is configured.
 

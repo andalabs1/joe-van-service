@@ -1,56 +1,83 @@
 import Image from 'next/image';
-import type {Metadata} from 'next';
-import {getTranslations} from 'next-intl/server';
-import {Link} from '@/i18n/navigation';
-import type {Locale} from '@/i18n/routing';
-import {buildMetadata} from '@/lib/site';
-import {bangkokRoutes} from '@/data/routes';
-import {publishedServices} from '@/data/services';
-import {vehicleLuggageKey, vehicleModels, vehicleSeatFeatureKey, vehicleSeatsKey} from '@/data/vehicles';
-import {getVehicleStartingPrices} from '@/data/vehicle-pricing';
-import {ArrowIcon, BriefcaseIcon, CalendarIcon, CompassIcon, GlobeIcon, LineIcon, PhoneIcon, PinIcon, RouteIcon, SendIcon, ShieldIcon, WhatsappIcon} from '@/components/icons';
-import {VehicleCard} from '@/components/vehicle-card';
-import {FormSelect} from '@/components/form-select';
-import {HomeGalleries, type GalleryMedia} from '@/components/home-galleries';
-import {formatPrice} from '@/data/pricing';
-import {lineUrl, phone, whatsappUrl} from '@/lib/site';
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
+import type { Locale } from '@/i18n/routing';
+import { buildMetadata, lineUrl, phone, siteUrl, whatsappUrl } from '@/lib/site';
+import { bangkokRoutes } from '@/data/routes';
+import { publishedServices } from '@/data/services';
+import { vehicleLuggageKey, vehicleModels, vehicleSeatFeatureKey, vehicleSeatsKey } from '@/data/vehicles';
+import { getVehicleStartingPrices } from '@/data/vehicle-pricing';
+import { ArrowIcon, CalendarIcon, GlobeIcon, LineIcon, PhoneIcon, RouteIcon, ShieldIcon, WhatsappIcon } from '@/components/icons';
+import { VehicleCard } from '@/components/vehicle-card';
+import { CarouselArrows } from '@/components/carousel-arrows';
+import { FormSelect } from '@/components/form-select';
+import { HomeGalleries, type GalleryMedia } from '@/components/home-galleries';
+import { formatPrice } from '@/data/pricing';
 
-type PageProps = {params: Promise<{locale: Locale}>};
+type PageProps = { params: Promise<{ locale: Locale }> };
 
-export async function generateMetadata({params}: PageProps): Promise<Metadata> {
-  const {locale} = await params;
-  const t = await getTranslations({locale, namespace: 'Metadata'});
-  return buildMetadata({locale, title: t('homeTitle'), description: t('homeDescription')});
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Metadata' });
+  return buildMetadata({ locale, title: t('homeTitle'), description: t('homeDescription') });
 }
 
-export default async function HomePage({params}: PageProps) {
-  const {locale} = await params;
-  const t = await getTranslations({locale, namespace: 'Home'});
-  const common = await getTranslations({locale, namespace: 'Common'});
-  const vehiclesCopy = await getTranslations({locale, namespace: 'Vehicles'});
-  const vehicle = await getTranslations({locale, namespace: 'Vehicle'});
-  const serviceCopy = [
-    {title: t('airport'), text: t('airportText'), slug: 'airport-transfer'},
-    {title: t('daily'), text: t('dailyText'), slug: 'daily-charter'},
-    {title: t('outstation'), text: t('outstationText'), slug: 'outstation-trip'}
+export default async function HomePage({ params }: PageProps) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'Home' });
+  const common = await getTranslations({ locale, namespace: 'Common' });
+  const vehiclesCopy = await getTranslations({ locale, namespace: 'Vehicles' });
+  const vehicle = await getTranslations({ locale, namespace: 'Vehicle' });
+  const reviews = [
+    { text: t('review1Text'), name: t('review1Name'), trip: t('review1Trip'), image: '/gallery/S__49463317_0.jpg' },
+    { text: t('review2Text'), name: t('review2Name'), trip: t('review2Trip'), image: '/gallery/S__49463318_0.jpg' },
+    { text: t('review3Text'), name: t('review3Name'), trip: t('review3Trip'), image: '/gallery/S__49463316_0.jpg' }
+  ];
+  const serviceShowcaseCards = [
+    {
+      title: t('strip1Title'),
+      text: t('strip1Text'),
+      image: '/services/airport-transfer.png',
+      href: '/booking?service=airport-transfer'
+    },
+    {
+      title: t('strip2Title'),
+      text: t('strip2Text'),
+      image: '/services/private-trip.png',
+      href: '/booking?origin=bangkok&destination=hua-hin'
+    },
+    {
+      title: t('strip3Title'),
+      text: t('strip3Text'),
+      image: '/services/family-outstation.png',
+      href: '/booking?service=outstation-trip'
+    },
+    {
+      title: t('strip4Title'),
+      text: t('strip4Text'),
+      image: '/services/corporate-transport.png',
+      href: '/booking?service=corporate-transport',
+      featured: true
+    }
   ];
   const familiarItems = [
-    {title: t('sameDriverTitle'), text: t('sameDriverText')},
-    {title: t('preferencesTitle'), text: t('preferencesText')},
-    {title: t('petTitle'), text: t('petText')},
-    {title: t('preparedTitle'), text: t('preparedText')}
+    { title: t('sameDriverTitle'), text: t('sameDriverText') },
+    { title: t('preferencesTitle'), text: t('preferencesText') },
+    { title: t('petTitle'), text: t('petText') },
+    { title: t('preparedTitle'), text: t('preparedText') }
   ];
   const bookingSteps = [
-    {title: t('stepTripTitle'), text: t('stepTripText')},
-    {title: t('stepVehicleTitle'), text: t('stepVehicleText')},
-    {title: t('stepReviewTitle'), text: t('stepReviewText')},
-    {title: t('stepConfirmedTitle'), text: t('stepConfirmedText')}
+    { title: t('stepTripTitle'), text: t('stepTripText') },
+    { title: t('stepVehicleTitle'), text: t('stepVehicleText') },
+    { title: t('stepReviewTitle'), text: t('stepReviewText') },
+    { title: t('stepConfirmedTitle'), text: t('stepConfirmedText') }
   ];
   const comfortItems = [
-    {title: t('rightVehicleTitle'), text: t('rightVehicleText')},
-    {title: t('changesTitle'), text: t('changesText')},
-    {title: t('includedTitle'), text: t('includedText')},
-    {title: t('supportTitle'), text: t('supportText')}
+    { title: t('rightVehicleTitle'), text: t('rightVehicleText') },
+    { title: t('changesTitle'), text: t('changesText') },
+    { title: t('includedTitle'), text: t('includedText') },
+    { title: t('supportTitle'), text: t('supportText') }
   ];
   const realGalleryFiles = [
     'S__49463314_0.jpg',
@@ -67,9 +94,9 @@ export default async function HomePage({params}: PageProps) {
     'S__49463326_0.jpg'
   ];
   const fleetMedia: GalleryMedia[] = [
-    {kind: 'video', src: '/inside-van.mp4', alt: t('interiorVideoAlt')},
-    {kind: 'image', src: '/inside-seat-2.jpg', alt: t('interiorSecondAlt')},
-    {kind: 'image', src: '/backside-van.jpg', alt: t('vanRearAlt')}
+    { kind: 'video', src: '/inside-van.mp4', alt: t('interiorVideoAlt') },
+    { kind: 'image', src: '/inside-seat-2.jpg', alt: t('interiorSecondAlt') },
+    { kind: 'image', src: '/backside-van.jpg', alt: t('vanRearAlt') }
   ];
   const realPhotos: GalleryMedia[] = realGalleryFiles.map((file, index) => ({
     kind: 'image',
@@ -77,70 +104,155 @@ export default async function HomePage({params}: PageProps) {
     alt: `${t('realPhotoLabel')} ${index + 1}`
   }));
   const startingPrices = getVehicleStartingPrices();
-  const vehicleCards = vehicleModels.map((model) => ({
-    image: model.image,
-    title: vehicle(model.category),
-    seats: vehiclesCopy(vehicleSeatsKey[model.category]),
-    luggage: vehiclesCopy(vehicleLuggageKey[model.category]),
-    seat: vehiclesCopy(vehicleSeatFeatureKey[model.category]),
-    price: `${common('startingAt')} ${formatPrice(startingPrices[model.category], locale)}`,
-    href: `/vehicles#vehicle-group-${model.group}`
-  }));
+  const vehicleCards = vehicleModels.map((model) => {
+    const rawPrice = startingPrices[model.category];
+    return {
+      image: model.image,
+      title: vehicle(model.category),
+      seats: vehiclesCopy(vehicleSeatsKey[model.category]),
+      luggage: vehiclesCopy(vehicleLuggageKey[model.category]),
+      seat: vehiclesCopy(vehicleSeatFeatureKey[model.category]),
+      price: rawPrice !== null ? (formatPrice(rawPrice, locale) ?? common('requestQuote')) : common('requestQuote'),
+      href: `/vehicles#vehicle-group-${model.group}`,
+      badge: model.category === 'sedan' || model.category === 'suv' ? vehiclesCopy('bestPrice') : undefined
+    };
+  });
   const localBusiness = {
     '@context': 'https://schema.org', '@type': 'LocalBusiness',
     name: 'mongkonridemate',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://joe-van-service.vercel.app',
+    url: siteUrl,
     areaServed: 'Thailand', priceRange: '฿฿'
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(localBusiness).replaceAll('<', '\\u003c')}} />
-      <section className="hero hero-vip">
-        <Image src="/hero-section.png" alt="" fill priority sizes="100vw" className="hero-image" />
-        <div className="hero-overlay hero-vip-overlay" />
-        <div className="shell hero-content hero-vip-content">
-          <div className="hero-copy hero-vip-copy">
-            <p className="hero-brand">{t('heroBrand')}</p>
-            <h1>{t('heroTitlePrefix')} <span className="hero-vip-accent">{t('heroTitleAccent')}</span></h1>
-            <p className="hero-lead hero-vip-lead">{t('heroSubtitle')}</p>
-            <div className="hero-cta-row">
-              <Link href="/booking" locale={locale} className="hero-cta hero-cta-book" aria-label={t('heroBook')}><CalendarIcon /><span className="hero-cta-label">{t('heroBook')}</span></Link>
-              <a href={lineUrl} target="_blank" rel="noopener noreferrer" className="hero-cta hero-cta-line" aria-label={t('heroLine')}><LineIcon /><span className="hero-cta-label">{t('heroLine')}</span></a>
-              <a href={`tel:${phone.replaceAll('-', '').replaceAll(' ', '')}`} className="hero-cta hero-cta-call" aria-label={t('heroCall')}><PhoneIcon /><span className="hero-cta-label">{t('heroCall')}</span></a>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hero-cta hero-cta-whatsapp" aria-label={t('heroWhatsapp')}><WhatsappIcon /><span className="hero-cta-label">{t('heroWhatsapp')}</span></a>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusiness).replaceAll('<', '\\u003c') }} />
+      <section
+        aria-labelledby="home-hero-title"
+        className="home-hero-gradient relative isolate flex min-h-[640px] items-end overflow-hidden lg:min-h-[520px] lg:max-h-[520px] lg:items-center"
+      >
+        {/* Background — รูปด้านหลัง + gradient ทับ ด้านขวาอ่อนลงให้เห็นรถ */}
+        <Image
+          src="/hero-16.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="home-hero-photo"
+        />
+        <div aria-hidden="true" className="home-hero-gradient-bg" />
+        <div aria-hidden="true" className="home-hero-gradient-glow" />
+
+        {/* Content — ชิดซ้าย ให้เห็นตัวรถที่กลับด้านอยู่ฝั่งขวา */}
+        <div className="relative mx-auto flex w-full max-w-[1280px] justify-start px-5 py-12 sm:px-8 sm:py-14 lg:px-12 lg:py-24">
+          <div className="w-full max-w-[800px]">
+            {/* Brand, headline, supporting copy and direct contact actions */}
+            {/* Brand logo */}
+            <Image
+              src="/logo-only-text.png"
+              alt={t('heroBrand')}
+              width={640}
+              height={213}
+              priority
+              sizes="(max-width: 640px) 78vw, 420px"
+              className="home-hero-brand-logo mb-4"
+            /> 
+            <h1
+              id="home-hero-title"
+              className="home-hero-title mb-3 font-medium leading-[1.12] tracking-[-0.03em] text-white"
+            >
+              {t('heroTitlePrefix')}{' '}
+              <span className="text-[#E9CDA3]">{t('heroTitleAccent')}</span>
+            </h1>
+            <p className="mb-6 max-w-[680px] text-[15px] font-medium leading-[1.75] !text-white sm:text-lg">
+              {t('heroSubtitle')}
+            </p>
+
+            <div className="home-hero-actions">
+              <Link
+                href="/booking"
+                locale={locale}
+                className="home-hero-action home-hero-action-primary"
+              >
+                <CalendarIcon />
+                <span>{t('heroBook')}</span>
+              </Link>
+              <a
+                href={lineUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="home-hero-action home-hero-action-line home-hero-action-icon"
+                aria-label={t('heroLine')}
+              >
+                <LineIcon />
+              </a>
+              <a
+                href={`tel:${phone}`}
+                className="home-hero-action home-hero-action-call home-hero-action-icon"
+                aria-label={t('heroCall')}
+              >
+                <PhoneIcon />
+              </a>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="home-hero-action home-hero-action-whatsapp home-hero-action-icon"
+                aria-label={t('heroWhatsapp')}
+              >
+                <WhatsappIcon />
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="hero-photo-strip" aria-hidden="false">
-        <figure><Image src="/inside-seat.jpg" alt={t('interiorAlt')} fill sizes="(max-width: 760px) 100vw, 33vw" /></figure>
-        <figure><Image src="/inside-seat-2.jpg" alt={t('interiorSecondAlt')} fill sizes="(max-width: 760px) 100vw, 33vw" /></figure>
-        <figure><Image src="/backside-van.jpg" alt={t('vanRearAlt')} fill sizes="(max-width: 760px) 100vw, 33vw" /></figure>
-      </div>
-
-      <section className="services-strip" aria-labelledby="services-strip-title">
+      <section className="service-showcase" aria-labelledby="services-showcase-title">
         <div className="shell">
-          <h2 id="services-strip-title">{t('servicesStripTitle')}</h2>
-          <ul>
-            <li><Link href="/booking?service=airport-transfer" locale={locale}><span className="services-strip-icon"><SendIcon /></span><strong>{t('strip1Title')}</strong><small>{t('strip1Text')}</small></Link></li>
-            <li><Link href="/booking?origin=bangkok&destination=hua-hin" locale={locale}><span className="services-strip-icon"><PinIcon /></span><strong>{t('strip2Title')}</strong><small>{t('strip2Text')}</small></Link></li>
-            <li><Link href="/booking?service=outstation-trip" locale={locale}><span className="services-strip-icon"><CompassIcon /></span><strong>{t('strip3Title')}</strong><small>{t('strip3Text')}</small></Link></li>
-            <li><Link href="/booking?service=corporate-transport" locale={locale}><span className="services-strip-icon"><BriefcaseIcon /></span><strong>{t('strip4Title')}</strong><small>{t('strip4Text')}</small></Link></li>
-            <li><Link href="/booking?service=multi-day-trip" locale={locale}><span className="services-strip-icon"><GlobeIcon /></span><strong>{t('strip5Title')}</strong><small>{t('strip5Text')}</small></Link></li>
-          </ul>
+          <div className="service-showcase-heading">
+            <h2 id="services-showcase-title">{t('servicesStripTitle')}</h2>
+            <p>{t('sectionServicesLead')}</p>
+          </div>
+          <CarouselArrows targetId="services-row" prevLabel={t('lightboxPrev')} nextLabel={t('lightboxNext')} className="carousel-arrows-for-services" />
+          <div className="service-showcase-grid" id="services-row">
+            {serviceShowcaseCards.map((service) => (
+              <Link
+                key={service.title}
+                href={service.href}
+                locale={locale}
+                className={`service-showcase-card${service.featured ? ' is-featured' : ''}`}
+              >
+                <div className="service-showcase-card-head">
+                  <span>{service.title}</span>
+                  <span className="service-showcase-arrow" aria-hidden="true"><ArrowIcon /></span>
+                </div>
+                <div className="service-showcase-image">
+                  <Image
+                    src={service.image}
+                    alt={`${service.title} — ${service.text}`}
+                    fill
+                    quality={90}
+                    sizes={service.featured ? '(max-width: 760px) 84vw, (max-width: 1100px) 45vw, 560px' : '(max-width: 760px) 84vw, (max-width: 1100px) 45vw, 380px'}
+                    style={{ objectFit: 'cover', objectPosition: 'center 30%' }}
+                  />
+                </div>
+                <div className="service-showcase-card-foot">
+                  <strong>{service.title}</strong>
+                  <small>{service.text}</small>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
       <div className="shell quick-booking-standalone">
         <form className="quick-booking" action={`/${locale}/booking`} method="get">
-          <label><span>{t('quickService')}</span><FormSelect name="service" defaultValue="airport-transfer" options={publishedServices.map((service) => ({value: service.slug, label: service.name[locale]}))} ariaLabel={t('quickService')} variant="borderless" className="quick-booking-select" /></label>
-          <label><span>{t('quickFrom')}</span><FormSelect name="origin" defaultValue="bangkok" options={[{value: 'bangkok', label: t('quickFromValue')}, ...bangkokRoutes.map((route) => ({value: route.id, label: route.destination[locale]}))]} ariaLabel={t('quickFrom')} variant="borderless" className="quick-booking-select" showSearch /></label>
-          <label><span>{t('quickTo')}</span><FormSelect name="destination" options={bangkokRoutes.map((route) => ({value: route.id, label: route.destination[locale]}))} placeholder={t('quickToPlaceholder')} ariaLabel={t('quickTo')} variant="borderless" className="quick-booking-select" showSearch /></label>
+          <label><span>{t('quickService')}</span><FormSelect name="service" defaultValue="airport-transfer" options={publishedServices.map((service) => ({ value: service.slug, label: service.name[locale] }))} ariaLabel={t('quickService')} variant="borderless" className="quick-booking-select" /></label>
+          <label><span>{t('quickFrom')}</span><FormSelect name="origin" defaultValue="bangkok" options={[{ value: 'bangkok', label: t('quickFromValue') }, ...bangkokRoutes.map((route) => ({ value: route.id, label: route.destination[locale] }))]} ariaLabel={t('quickFrom')} variant="borderless" className="quick-booking-select" showSearch /></label>
+          <label><span>{t('quickTo')}</span><FormSelect name="destination" options={bangkokRoutes.map((route) => ({ value: route.id, label: route.destination[locale] }))} placeholder={t('quickToPlaceholder')} ariaLabel={t('quickTo')} variant="borderless" className="quick-booking-select" showSearch /></label>
           <button className="quick-booking-submit" type="submit"><span>{common('bookNow')}</span><ArrowIcon /></button>
         </form>
-        <p className="quick-booking-note"><span aria-hidden="true">●</span>{t('priceNote')}</p>
       </div>
 
       <section className="vehicle-models-section" aria-labelledby="vehicle-models-title">
@@ -150,7 +262,8 @@ export default async function HomePage({params}: PageProps) {
             <h2 id="vehicle-models-title">{t('modelsTitle')}</h2>
             <p>{t('modelsLead')}</p>
           </div>
-          <div className="vehicle-model-grid">
+          <CarouselArrows targetId="vehicles-row" prevLabel={t('lightboxPrev')} nextLabel={t('lightboxNext')} className="carousel-arrows-for-vehicles" />
+          <div className="vehicle-model-grid" id="vehicles-row">
             {vehicleCards.map((model) => (
               <VehicleCard
                 key={model.title}
@@ -162,7 +275,8 @@ export default async function HomePage({params}: PageProps) {
                 price={model.price}
                 href={model.href}
                 locale={locale}
-                actionLabel={vehiclesCopy('detailsAndBook')}
+                actionLabel={vehiclesCopy('bookNow')}
+                badge={model.badge}
               />
             ))}
           </div>
@@ -213,12 +327,21 @@ export default async function HomePage({params}: PageProps) {
         </div>
       </section>
 
-      <section className="section section-warm"><div className="shell">
-        <div className="section-heading section-heading-split"><div><p className="eyebrow">{common('services')}</p><h2>{t('sectionServices')}</h2></div><p>{t('sectionServicesLead')}</p></div>
-        <div className="service-grid service-grid-editorial">{serviceCopy.map((service, index) => (
-          <Link key={service.slug} href={`/booking?service=${service.slug}`} locale={locale} className="service-card">
-            <span className="card-number">0{index + 1}</span><div className="service-card-arrow"><ArrowIcon /></div><h3>{service.title}</h3><p>{service.text}</p><span className="text-link">{common('details')}<ArrowIcon /></span>
-          </Link>
+      <section className="section reviews-section" aria-labelledby="reviews-title"><div className="shell">
+        <div className="section-heading"><p className="eyebrow">{t('reviewsEyebrow')}</p><h2 id="reviews-title">{t('reviewsTitle')}</h2><p>{t('reviewsLead')}</p></div>
+        <CarouselArrows targetId="reviews-row" prevLabel={t('lightboxPrev')} nextLabel={t('lightboxNext')} className="carousel-arrows-for-reviews" />
+        <div className="reviews-grid" id="reviews-row">{reviews.map((review) => (
+          <article key={review.name} className="review-card">
+            <div className="review-card-body">
+              <p className="review-stars" aria-label="5 / 5">★★★★★</p>
+              <p className="review-text">{review.text}</p>
+              <p className="review-name">— {review.name}</p>
+              <p className="review-trip">{review.trip}</p>
+            </div>
+            <div className="review-media">
+              <Image src={review.image} alt={`${t('reviewVideoLabel')} — ${review.name}`} fill sizes="(max-width: 760px) 88vw, (max-width: 1100px) 45vw, 30vw" />
+            </div>
+          </article>
         ))}</div>
       </div></section>
 
@@ -247,7 +370,7 @@ export default async function HomePage({params}: PageProps) {
       <section className="cta-band cta-premium">
         <div className="cta-van" aria-hidden="true">
           <Image src="/van-8-no-bg.png"
-          alt="" fill sizes="(max-width: 760px) 220px, 330px" />
+            alt="" fill sizes="(max-width: 760px) 220px, 330px" />
         </div>
         <div className="shell cta-inner"><div><p className="eyebrow">{t('ctaEyebrow')}</p><h2>{t('finalTitle')}</h2><p>{t('finalText')}</p></div><Link href="/booking" locale={locale} className="button button-dark">{common('bookNow')}<ArrowIcon /></Link></div>
       </section>

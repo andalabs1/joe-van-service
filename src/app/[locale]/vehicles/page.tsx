@@ -1,11 +1,13 @@
 import type {Metadata} from 'next';
+import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {buildMetadata} from '@/lib/site';
 import {formatPrice} from '@/data/pricing';
 import {getVehicleStartingPrices, vehicleCategories, vehicleGroups} from '@/data/vehicle-pricing';
-import {vehicleLuggageKey, vehicleModelsByGroup, vehicleSeatFeatureKey, vehicleSeatsKey, type VehicleGroupKey} from '@/data/vehicles';import {ArrowIcon} from '@/components/icons';
+import {vehicleLuggageKey, vehicleModelsByGroup, vehicleSeatFeatureKey, vehicleSeatsKey, type VehicleGroupKey} from '@/data/vehicles';
+import {ArrowIcon} from '@/components/icons';
 import {VehicleCard} from '@/components/vehicle-card';
 
 type PageProps = {params: Promise<{locale: Locale}>};
@@ -39,7 +41,22 @@ export default async function VehiclesPage({params}: PageProps) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(itemList).replaceAll('<', '\\u003c')}} />
-      <section className="page-hero"><div className="shell"><p className="eyebrow">{t('eyebrow')}</p><h1>{t('title')}</h1><p>{t('lead')}</p></div></section>
+      <section className="vehicles-hero">
+        <Image
+          className="vehicles-hero-image"
+          src="/vehicles-fleet-hero.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+        />
+        <div className="vehicles-hero-overlay" />
+        <div className="shell vehicles-hero-content">
+          <p className="eyebrow light">{t('eyebrow')}</p>
+          <h1>{t('title')}</h1>
+          <p>{t('lead')}</p>
+        </div>
+      </section>
 
       {vehicleGroups.map((group) => (
         <section key={group.key} className="section shell vehicle-group-section" aria-labelledby={`vehicle-group-${group.key}`}>
@@ -50,6 +67,7 @@ export default async function VehiclesPage({params}: PageProps) {
           <div className="vehicle-model-grid vehicle-page-grid">
             {vehicleModelsByGroup[group.key as VehicleGroupKey].map((model) => {
               const price = starting[model.category];
+              const isBestPrice = model.category === 'sedan' || model.category === 'suv';
               return (
                 <VehicleCard
                   key={model.category}
@@ -58,10 +76,11 @@ export default async function VehiclesPage({params}: PageProps) {
                   seats={t(vehicleSeatsKey[model.category])}
                   luggage={t(vehicleLuggageKey[model.category])}
                   seat={t(vehicleSeatFeatureKey[model.category])}
-                  price={price !== null ? `${common('startingAt')} ${formatPrice(price, locale)}` : common('requestQuote')}
+                  price={price !== null ? (formatPrice(price, locale) ?? common('requestQuote')) : common('requestQuote')}
                   href={`/booking?vehicle=${model.category}`}
                   locale={locale}
-                  actionLabel={t('detailsAndBook')}
+                  actionLabel={t('bookNow')}
+                  badge={isBestPrice ? t('bestPrice') : undefined}
                 />
               );
             })}

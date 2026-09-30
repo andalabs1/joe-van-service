@@ -61,6 +61,7 @@ export default async function ServicesPage({params}: PageProps) {
         <div className="services-vehicle-grid">
           {vehicleModels.map((model) => {
             const price = getVehicleStartingPrices()[model.category];
+            const isBestPrice = model.category === 'sedan' || model.category === 'suv';
             return (
               <VehicleCard
                 key={model.category}
@@ -69,10 +70,11 @@ export default async function ServicesPage({params}: PageProps) {
                 seats={vehiclesT(vehicleSeatsKey[model.category])}
                 luggage={vehiclesT(vehicleLuggageKey[model.category])}
                 seat={vehiclesT(vehicleSeatFeatureKey[model.category])}
-                price={price !== null ? `${common('startingAt')} ${formatPrice(price, locale)}` : common('requestQuote')}
+                price={price !== null ? (formatPrice(price, locale) ?? common('requestQuote')) : common('requestQuote')}
                 href={`/booking?vehicle=${model.category}`}
                 locale={locale}
-                actionLabel={vehiclesT('detailsAndBook')}
+                actionLabel={vehiclesT('bookNow')}
+                badge={isBestPrice ? vehiclesT('bestPrice') : undefined}
               />
             );
           })}
@@ -142,7 +144,7 @@ export default async function ServicesPage({params}: PageProps) {
         </section>
       </div>
 
-      <section className="section section-ink"><div className="shell conditions"><div><p className="eyebrow light">{common('referencePrice')}</p><h2>{t('conditionsTitle')}</h2></div><ul><li>{t('condition1')}</li><li>{t('condition2')}</li><li>{t('condition3')}</li></ul></div></section>
+      <section className="section section-ink"><div className="shell conditions"><div><p className="eyebrow light">{common('referencePrice')}</p><h2>{t('conditionsTitle')}</h2></div><ul><li>{t('condition1')}</li><li>{t('condition2')}</li><li>{t('condition3')}</li><li>{t('condition4')}</li></ul></div></section>
     </>
   );
 }

@@ -7,7 +7,8 @@ import {SiteFooter} from '@/components/site-footer';
 import {FloatingContact} from '@/components/mobile-actions';
 import {DesignProvider} from '@/components/design-provider';
 import {AntdRegistry} from '@ant-design/nextjs-registry';
-import {Prompt} from 'next/font/google';
+import {Toaster} from 'sonner';
+import {IBM_Plex_Sans_Thai, Prompt} from 'next/font/google';
 import type {Metadata} from 'next';
 import '../globals.css';
 
@@ -23,6 +24,13 @@ const prompt = Prompt({
   subsets: ['thai', 'latin'],
   display: 'swap',
   variable: '--font-prompt'
+});
+
+const ibmPlexSansThai = IBM_Plex_Sans_Thai({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['thai', 'latin'],
+  display: 'swap',
+  variable: '--font-ibm-plex-sans-thai'
 });
 
 export function generateStaticParams() {
@@ -41,7 +49,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={prompt.variable}>
+    <html lang={locale} className={`${prompt.variable} ${ibmPlexSansThai.variable}`}>
       <body>
         <a className="skip-link" href="#main">Skip to content</a>
         <AntdRegistry>
@@ -51,6 +59,7 @@ export default async function LocaleLayout({
               <main id="main">{children}</main>
               <SiteFooter locale={locale as Locale} />
               <FloatingContact locale={locale as Locale} />
+              <Toaster richColors position="top-center" closeButton />
             </NextIntlClientProvider>
           </DesignProvider>
         </AntdRegistry>

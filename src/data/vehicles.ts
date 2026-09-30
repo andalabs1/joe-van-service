@@ -14,10 +14,10 @@ const groupImage: Record<VehicleGroupKey, string> = {
 };
 
 const categoryImage: Record<VehicleCategory, string> = {
-  commuter8: '/van-8.jpg',
+  commuter8: '/van-9.jpg',
   commuter10: '/van-9.jpg',
   newCommuter8: '/van-8.jpg',
-  newCommuter10: '/van-9.jpg',
+  newCommuter10: '/van-8.jpg',
   suv: '/suv.jpg',
   sedan: '/sedan.jpg'
 };

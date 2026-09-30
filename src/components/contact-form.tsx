@@ -1,7 +1,8 @@
 'use client';
 
-import {useActionState} from 'react';
+import {useActionState, useEffect, useRef} from 'react';
 import {useFormStatus} from 'react-dom';
+import {toast} from 'sonner';
 import {Checkbox, Input} from 'antd';
 import {submitContact, type ContactState} from '@/app/[locale]/contact/actions';
 import type {Locale} from '@/i18n/routing';
@@ -30,13 +31,29 @@ function SubmitButton({labels}: {labels: ContactLabels}) {
 
 export function ContactForm({locale, labels}: {locale: Locale; labels: ContactLabels}) {
   const [state, formAction] = useActionState(submitContact, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+  const lastToastRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!state.message) return;
+    const key = `${state.status}:${state.message}`;
+    if (lastToastRef.current === key) return;
+    lastToastRef.current = key;
+
+    if (state.status === 'success') {
+      toast.success(state.message);
+      formRef.current?.reset();
+    } else if (state.status === 'unconfigured') {
+      toast.warning(state.message);
+    } else if (state.status === 'error') {
+      toast.error(state.message);
+    }
+  }, [state.message, state.status]);
 
   return (
-    <form action={formAction} className="contact-enquiry-form">
+    <form ref={formRef} action={formAction} className="contact-enquiry-form">
       <input type="hidden" name="locale" value={locale} />
       <div className="honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
-
-      {state.message && <div className={`form-status form-status-${state.status}`} role="status">{state.message}</div>}
 
       <div className="form-grid">
         <label className="field">

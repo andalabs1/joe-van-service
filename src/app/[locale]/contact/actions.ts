@@ -1,6 +1,7 @@
 'use server';
 
 import {z} from 'zod';
+import {formatContactLineMessage, isLineConfigured, pushLineText} from '@/lib/line';
 
 export type ContactState = {
   status: 'idle' | 'error' | 'success' | 'unconfigured';
@@ -35,7 +36,8 @@ export async function submitContact(
   }
 
   const webhookUrl = process.env.BOOKING_WEBHOOK_URL;
-  if (!webhookUrl) {
+  const lineEnabled = isLineConfigured();
+  if (!webhookUrl && !lineEnabled) {
     return {
       status: 'unconfigured',
       message: locale === 'th'
@@ -45,14 +47,28 @@ export async function submitContact(
   }
 
   try {
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {'content-type': 'application/json'},
-      body: JSON.stringify({type: 'contact', ...parsed.data}),
-      cache: 'no-store'
-    });
+    let lineError: unknown = null;
+    if (lineEnabled) {
+      try {
+        await pushLineText(formatContactLineMessage({...parsed.data, locale}));
+      } catch (error) {
+        lineError = error;
+        console.error('[contact] LINE push failed:', error);
+      }
+    }
 
-    if (!response.ok) throw new Error('Contact webhook returned a non-success status');
+    if (webhookUrl) {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({type: 'contact', ...parsed.data}),
+        cache: 'no-store'
+      });
+
+      if (!response.ok) throw new Error('Contact webhook returned a non-success status');
+    } else if (lineError) {
+      throw lineError;
+    }
 
     return {
       status: 'success',

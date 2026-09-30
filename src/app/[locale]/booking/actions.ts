@@ -1,6 +1,7 @@
 'use server';
 
 import {z} from 'zod';
+import {formatBookingLineMessage, isLineConfigured, pushLineText} from '@/lib/line';
 
 export type BookingState = {
   status: 'idle' | 'error' | 'success' | 'unconfigured';
@@ -53,7 +54,8 @@ export async function submitBooking(
   }
 
   const webhookUrl = process.env.BOOKING_WEBHOOK_URL;
-  if (!webhookUrl) {
+  const lineEnabled = isLineConfigured();
+  if (!webhookUrl && !lineEnabled) {
     return {
       status: 'unconfigured',
       message: locale === 'th'
@@ -65,14 +67,31 @@ export async function submitBooking(
   const reference = `JV-${new Date().toISOString().slice(0, 10).replaceAll('-', '')}-${crypto.randomUUID().slice(0, 6).toUpperCase()}`;
 
   try {
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {'content-type': 'application/json'},
-      body: JSON.stringify({reference, ...parsed.data}),
-      cache: 'no-store'
-    });
+    // 1) ส่งเข้า LINE group (หลัก) — ไม่ block การจองถ้าส่ง LINE พลาดแต่ webhook สำเร็จ
+    let lineError: unknown = null;
+    if (lineEnabled) {
+      try {
+        await pushLineText(formatBookingLineMessage({reference, ...parsed.data, locale}));
+      } catch (error) {
+        lineError = error;
+        console.error('[booking] LINE push failed:', error);
+      }
+    }
 
-    if (!response.ok) throw new Error('Booking webhook returned a non-success status');
+    // 2) ส่งเข้า webhook เดิม (ถ้ามีตั้งค่าไว้ เช่น Google Sheet / Slack / อื่นๆ)
+    if (webhookUrl) {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        body: JSON.stringify({reference, ...parsed.data}),
+        cache: 'no-store'
+      });
+
+      if (!response.ok) throw new Error('Booking webhook returned a non-success status');
+    } else if (lineError) {
+      // มีแค่ LINE แต่ส่งไม่สำเร็จ = ถือว่าส่งไม่สำเร็จ
+      throw lineError;
+    }
 
     return {
       status: 'success',
