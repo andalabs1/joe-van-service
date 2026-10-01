@@ -42,7 +42,7 @@ export default async function ContactPage({params}: PageProps) {
         <div className="shell contact-about-content">
           <p className="eyebrow light">{t('eyebrow')}</p>
           <h1>{t('aboutTitle')}</h1>
-          <strong>mongkonridemate</strong>
+          <Image src="/logo-only-text.png" alt="mongkonridemate" width={320} height={107} priority className="contact-about-logo" />
           <p>{t('aboutText')}</p>
         </div>
       </section>

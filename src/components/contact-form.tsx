@@ -5,6 +5,7 @@ import {useFormStatus} from 'react-dom';
 import {toast} from 'sonner';
 import {Checkbox, Input} from 'antd';
 import {submitContact, type ContactState} from '@/app/[locale]/contact/actions';
+import {FormPendingToast} from './form-pending-toast';
 import type {Locale} from '@/i18n/routing';
 
 type ContactLabels = {
@@ -18,6 +19,8 @@ type ContactLabels = {
 };
 
 const initialState: ContactState = {status: 'idle'};
+
+const CONTACT_TOAST_ID = 'contact-form-status';
 
 function FieldError({state, name}: {state: ContactState; name: string}) {
   const message = state.errors?.[name]?.[0];
@@ -41,17 +44,18 @@ export function ContactForm({locale, labels}: {locale: Locale; labels: ContactLa
     lastToastRef.current = key;
 
     if (state.status === 'success') {
-      toast.success(state.message);
+      toast.success(state.message, {id: CONTACT_TOAST_ID});
       formRef.current?.reset();
     } else if (state.status === 'unconfigured') {
-      toast.warning(state.message);
+      toast.warning(state.message, {id: CONTACT_TOAST_ID});
     } else if (state.status === 'error') {
-      toast.error(state.message);
+      toast.error(state.message, {id: CONTACT_TOAST_ID});
     }
   }, [state.message, state.status]);
 
   return (
     <form ref={formRef} action={formAction} className="contact-enquiry-form">
+      <FormPendingToast message={labels.submitting} toastId={CONTACT_TOAST_ID} />
       <input type="hidden" name="locale" value={locale} />
       <div className="honeypot" aria-hidden="true"><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
 

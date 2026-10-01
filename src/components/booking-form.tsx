@@ -8,6 +8,7 @@ import {submitBooking, type BookingState} from '@/app/[locale]/booking/actions';
 import type {Locale} from '@/i18n/routing';
 import {BriefcaseIcon, CalendarIcon, ClockIcon, CompassIcon, LineIcon, MailIcon, PhoneIcon, PinIcon, RouteIcon, SendIcon, UsersIcon} from './icons';
 import {FormSelect} from './form-select';
+import {FormPendingToast} from './form-pending-toast';
 import {FormDatePicker, FormNumber, FormTimePicker} from './form-fields';
 
 type BookingLabels = {
@@ -36,6 +37,8 @@ type BookingLabels = {
 type VehicleOption = {value: string; label: string};
 
 const initialState: BookingState = {status: 'idle'};
+
+const BOOKING_TOAST_ID = 'booking-form-status';
 
 function SubmitButton({labels}: {labels: BookingLabels}) {
   const {pending} = useFormStatus();
@@ -69,17 +72,18 @@ export function BookingForm({
     lastToastRef.current = key;
 
     if (state.status === 'success') {
-      toast.success(state.message);
+      toast.success(state.message, {id: BOOKING_TOAST_ID});
       formRef.current?.reset();
     } else if (state.status === 'unconfigured') {
-      toast.warning(state.message);
+      toast.warning(state.message, {id: BOOKING_TOAST_ID});
     } else if (state.status === 'error') {
-      toast.error(state.message);
+      toast.error(state.message, {id: BOOKING_TOAST_ID});
     }
   }, [state.message, state.status]);
 
   return (
     <form ref={formRef} action={formAction} className="booking-form">
+      <FormPendingToast message={labels.submitting} toastId={BOOKING_TOAST_ID} />
       <input type="hidden" name="locale" value={locale} />
       <div className="honeypot" aria-hidden="true">
         <label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
