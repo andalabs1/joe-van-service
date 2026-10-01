@@ -1,57 +1,18 @@
-import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {vehicleModels} from '@/data/vehicles';
 import {LocaleSwitcher} from './locale-switcher';
 import {Logo} from './logo';
+import {DesktopNav, type DesktopNavLink} from './desktop-nav';
 import {MobileDrawer, type DrawerLink} from './mobile-drawer';
-import {
-  AnchorIcon,
-  ChevronDownIcon,
-  CompassIcon,
-  HomeIcon,
-  SunriseIcon,
-  SunsetIcon,
-} from './icons';
-import type {IconType} from 'react-icons';
 import {Suspense} from 'react';
-
-type SubLink = {href: string; label: string; icon?: IconType; image?: string};
-type NavLink = {href: string; label: string; children?: SubLink[]};
-
-const regionIcons: Record<string, IconType> = {
-  metropolitan: HomeIcon,
-  east: SunriseIcon,
-  west: SunsetIcon,
-  'north-northeast': CompassIcon,
-  south: AnchorIcon
-};
-
-function ChildVisual({child}: {child: SubLink}) {
-  if (child.image) {
-    return (
-      <span className="submenu-thumb" aria-hidden="true">
-        <Image src={child.image} alt="" width={64} height={44} />
-      </span>
-    );
-  }
-  if (child.icon) {
-    const Icon = child.icon;
-    return (
-      <span className="submenu-icon" aria-hidden="true">
-        <Icon />
-      </span>
-    );
-  }
-  return null;
-}
 
 export async function SiteHeader({locale}: {locale: Locale}) {
   const t = await getTranslations({locale, namespace: 'Common'});
   const vehicle = await getTranslations({locale, namespace: 'Vehicle'});
   const bangkok = await getTranslations({locale, namespace: 'Bangkok'});
-  const regionLinks: SubLink[] = [
+  const regionLinks = [
     {value: 'metropolitan', label: bangkok('metropolitan')},
     {value: 'east', label: bangkok('east')},
     {value: 'west', label: bangkok('west')},
@@ -60,9 +21,9 @@ export async function SiteHeader({locale}: {locale: Locale}) {
   ].map((region) => ({
     href: `/routes#region-${region.value}`,
     label: region.label,
-    icon: regionIcons[region.value]
+    iconName: region.value
   }));
-  const links: NavLink[] = [
+  const links: DesktopNavLink[] = [
     {href: '/', label: t('home')},
     {href: '/services-rates', label: t('services')},
     {
@@ -107,35 +68,7 @@ export async function SiteHeader({locale}: {locale: Locale}) {
     <header className="site-header">
       <div className="shell header-inner">
         <Logo locale={locale} label={t('home')} />
-        <nav className="desktop-nav" aria-label="Main navigation">
-          <ul className="desktop-nav-list">
-            {links.map((link) => (
-              <li key={link.href} className={link.children ? 'nav-item has-submenu' : 'nav-item'}>
-                <Link
-                  href={link.href}
-                  locale={locale}
-                  className="nav-link"
-                  aria-haspopup={link.children ? 'true' : undefined}
-                >
-                  {link.label}
-                  {link.children && <ChevronDownIcon />}
-                </Link>
-                {link.children && (
-                  <ul className="submenu" aria-label={link.label}>
-                    {link.children.map((child) => (
-                      <li key={`${child.href}-${child.label}`}>
-                        <Link href={child.href} locale={locale}>
-                          <ChildVisual child={child} />
-                          <span>{child.label}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <DesktopNav locale={locale} links={links} />
         <div className="header-actions">
           <Suspense fallback={<span className="locale-switcher">{locale.toUpperCase()}</span>}>
             <LocaleSwitcher locale={locale} labels={{th: t('thai'), en: t('english'), aria: t('language')}} />

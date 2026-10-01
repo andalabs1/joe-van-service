@@ -1,7 +1,7 @@
 'use server';
 
 import {z} from 'zod';
-import {formatBookingLineMessage, isLineConfigured, pushLineText} from '@/lib/line';
+import {buildBookingFlexMessage, isLineConfigured, pushLineFlex} from '@/lib/line';
 
 export type BookingState = {
   status: 'idle' | 'error' | 'success' | 'unconfigured';
@@ -71,7 +71,7 @@ export async function submitBooking(
     let lineError: unknown = null;
     if (lineEnabled) {
       try {
-        await pushLineText(formatBookingLineMessage({reference, ...parsed.data, locale}));
+        await pushLineFlex(buildBookingFlexMessage({reference, ...parsed.data, locale}));
       } catch (error) {
         lineError = error;
         console.error('[booking] LINE push failed:', error);

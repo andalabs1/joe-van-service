@@ -34,10 +34,10 @@ export default async function ServiceDetailPage({params}: PageProps) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(schema).replaceAll('<', '\\u003c')}} />
       <section className="page-hero service-detail-hero"><div className="shell"><p className="eyebrow">{servicesT('eyebrow')}</p><h1>{service.name[locale]}</h1><p>{service.description[locale]}</p><div className="price-highlight"><span>{service.startingPrice ? common('startingAt') : common('requestQuote')}</span>{service.startingPrice && <strong>{formatPrice(service.startingPrice, locale)}</strong>}</div></div></section>
       <section className="section shell detail-grid">
-        <div><h2>{locale === 'th' ? 'จุดเด่นของบริการ' : 'Service highlights'}</h2><ul className="check-list">{service.highlights.map((item) => <li key={item.en}><ShieldIcon />{item[locale]}</li>)}</ul></div>
-        <div className="detail-card"><h2>{locale === 'th' ? 'รวมในบริการ' : 'Included'}</h2><ul>{service.inclusions.map((item) => <li key={item.en}>{item[locale]}</li>)}</ul><h3>{locale === 'th' ? 'อาจมีค่าใช้จ่ายเพิ่มเติม' : 'May cost extra'}</h3><ul>{service.exclusions.map((item) => <li key={item.en}>{item[locale]}</li>)}</ul></div>
+        <div><h2>{servicesT('detailHighlights')}</h2><ul className="check-list">{service.highlights.map((item) => <li key={item.en}><ShieldIcon />{item[locale]}</li>)}</ul></div>
+        <div className="detail-card"><h2>{servicesT('detailIncluded')}</h2><ul>{service.inclusions.map((item) => <li key={item.en}>{item[locale]}</li>)}</ul><h3>{servicesT('detailExtra')}</h3><ul>{service.exclusions.map((item) => <li key={item.en}>{item[locale]}</li>)}</ul></div>
       </section>
-      <section className="cta-band"><div className="shell cta-inner"><div><h2>{locale === 'th' ? 'ส่งรายละเอียดเพื่อเช็กรถว่าง' : 'Share the details to check availability'}</h2><p>{servicesT('notFinal')}</p></div><Link href={`/booking?service=${service.slug}`} locale={locale} className="button button-accent">{common('bookNow')}<ArrowIcon /></Link></div></section>
+      <section className="cta-band"><div className="shell cta-inner"><div><h2>{servicesT('detailCtaTitle')}</h2><p>{servicesT('notFinal')}</p></div><Link href={`/booking?service=${service.slug}`} locale={locale} className="button button-accent">{common('bookNow')}<ArrowIcon /></Link></div></section>
     </>
   );
 }

@@ -33,7 +33,15 @@ export type LineTextMessage = {
   text: string;
 };
 
-async function pushMessages(messages: LineTextMessage[]): Promise<void> {
+export type LineFlexMessage = {
+  type: 'flex';
+  altText: string;
+  contents: Record<string, unknown>;
+};
+
+export type LineMessage = LineTextMessage | LineFlexMessage;
+
+async function pushMessages(messages: LineMessage[]): Promise<void> {
   const {channelAccessToken, to} = getLineConfig();
   if (!channelAccessToken || !to) {
     throw new Error('LINE is not configured (missing access token or destination)');
@@ -60,6 +68,57 @@ export async function pushLineText(text: string): Promise<void> {
   const safe = text.length > 4900 ? `${text.slice(0, 4900)}\n…(ตัดข้อความส่วนเกิน)` : text;
   await pushMessages([{type: 'text', text: safe}]);
 }
+
+export async function pushLineFlex(message: LineFlexMessage): Promise<void> {
+  // altText max 400 chars, bubble JSON max ~50KB — trim defensively
+  const safeAlt = message.altText.length > 390 ? `${message.altText.slice(0, 390)}…` : message.altText;
+  await pushMessages([{...message, altText: safeAlt}]);
+}
+
+// ---------- Flex builders ----------
+
+type FlexText = {
+  type: 'text';
+  text: string;
+  color?: string;
+  size?: string;
+  weight?: string;
+  flex?: number;
+  wrap?: boolean;
+  align?: string;
+};
+
+function flexRow(label: string, value: string | undefined | null): Record<string, unknown> | null {
+  if (!value) return null;
+  return {
+    type: 'box',
+    layout: 'baseline',
+    spacing: 'sm',
+    contents: [
+      {type: 'text', text: label, color: '#aaaaaa', size: 'sm', flex: 2} as FlexText,
+      {type: 'text', text: truncate(value, 500), wrap: true, color: '#666666', size: 'sm', flex: 5} as FlexText
+    ]
+  };
+}
+
+function truncate(value: string, max: number): string {
+  return value.length > max ? `${value.slice(0, max)}…` : value;
+}
+
+const TRIP_LABEL: Record<string, string> = {
+  'one-way': 'เที่ยวเดียว',
+  'round-trip': 'ไป-กลับ',
+  overnight: 'ค้างคืน'
+};
+
+const VEHICLE_LABEL: Record<string, string> = {
+  commuter8: 'Commuter 8 ที่นั่ง',
+  commuter10: 'Commuter 10 ที่นั่ง',
+  newCommuter8: 'New Commuter 8 ที่นั่ง',
+  newCommuter10: 'New Commuter 10 ที่นั่ง',
+  suv: 'SUV',
+  sedan: 'Sedan'
+};
 
 export type BookingLinePayload = {
   reference: string;
@@ -112,4 +171,154 @@ export function formatContactLineMessage(data: ContactLinePayload): string {
     `📝 ข้อความ: ${data.message}`
   ].filter(Boolean);
   return (lines as string[]).join('\n');
+}
+
+export function buildBookingFlexMessage(data: BookingLinePayload): LineFlexMessage {
+  const BOOKING_GREEN = '#1DB446';
+  const tripLabel = TRIP_LABEL[data.tripType] ?? data.tripType;
+  const vehicleLabel = VEHICLE_LABEL[data.vehicleType] ?? data.vehicleType;
+  const telUri = `tel:${data.telephone.replaceAll(/[^+\d]/g, '')}`;
+
+  return {
+    type: 'flex',
+    altText: `แจ้งเตือน: คำขอจองใหม่ ${data.reference} - ${data.origin} → ${data.destination}`,
+    contents: {
+      type: 'bubble',
+      header: {
+        type: 'box',
+        layout: 'vertical',
+        backgroundColor: BOOKING_GREEN,
+        contents: [
+          {
+            type: 'text',
+            text: 'NEW BOOKING REQUEST',
+            color: '#FFFFFF',
+            weight: 'bold',
+            size: 'sm',
+            align: 'center'
+          }
+        ]
+      },
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        paddingAll: '20px',
+        contents: [
+          {
+            type: 'text',
+            text: truncate(data.reference, 60),
+            weight: 'bold',
+            size: 'xl'
+          },
+          {
+            type: 'text',
+            text: `${data.pickupDate} ${data.pickupTime} • ${data.locale === 'th' ? 'ภาษาไทย' : 'English'}`,
+            color: '#888888',
+            size: 'sm',
+            margin: 'xs'
+          },
+          {
+            type: 'box',
+            layout: 'vertical',
+            margin: 'md',
+            spacing: 'sm',
+            contents: [
+              flexRow('ต้นทาง', data.origin),
+              flexRow('ปลายทาง', data.destination),
+              flexRow('ประเภท', tripLabel),
+              flexRow('ผู้โดยสาร', `${data.passengers} คน`),
+              flexRow('รถ', vehicleLabel),
+              flexRow('สัมภาระ', data.luggage),
+              flexRow('โทร', data.telephone),
+              flexRow('LINE', data.lineId),
+              flexRow('หมายเหตุ', data.notes)
+            ].filter(Boolean)
+          }
+        ]
+      },
+      footer: {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'button',
+            style: 'primary',
+            color: BOOKING_GREEN,
+            action: {type: 'uri', label: `โทร ${data.telephone}`, uri: telUri}
+          }
+        ]
+      }
+    }
+  };
+}
+
+export function buildContactFlexMessage(data: ContactLinePayload): LineFlexMessage {
+  const CONTACT_GREEN = '#1DB446';
+  const telUri = `tel:${data.telephone.replaceAll(/[^+\d]/g, '')}`;
+
+  return {
+    type: 'flex',
+    altText: `แจ้งเตือน: ข้อความติดต่อใหม่ - ${data.name}`,
+    contents: {
+      type: 'bubble',
+      header: {
+        type: 'box',
+        layout: 'vertical',
+        backgroundColor: CONTACT_GREEN,
+        contents: [
+          {
+            type: 'text',
+            text: 'NEW CONTACT MESSAGE',
+            color: '#FFFFFF',
+            weight: 'bold',
+            size: 'sm',
+            align: 'center'
+          }
+        ]
+      },
+      body: {
+        type: 'box',
+        layout: 'vertical',
+        paddingAll: '20px',
+        contents: [
+          {
+            type: 'text',
+            text: truncate(data.name, 80),
+            weight: 'bold',
+            size: 'xl'
+          },
+          {
+            type: 'text',
+            text: data.locale === 'th' ? 'ภาษาไทย' : 'English',
+            color: '#888888',
+            size: 'sm',
+            margin: 'xs'
+          },
+          {
+            type: 'box',
+            layout: 'vertical',
+            margin: 'md',
+            spacing: 'sm',
+            contents: [
+              flexRow('โทร', data.telephone),
+              flexRow('LINE', data.lineId),
+              flexRow('ข้อความ', data.message)
+            ].filter(Boolean)
+          }
+        ]
+      },
+      footer: {
+        type: 'box',
+        layout: 'vertical',
+        contents: [
+          {
+            type: 'button',
+            style: 'primary',
+            color: CONTACT_GREEN,
+            action: {type: 'uri', label: `โทร ${data.telephone}`, uri: telUri}
+          }
+        ]
+      }
+    }
+  };
 }

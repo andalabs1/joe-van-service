@@ -21,13 +21,16 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
+  max-width: 100%;
+  overflow-x: clip;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-prompt), "Leelawadee UI", Tahoma, Arial, sans-serif;
+  font-family: var(--font-noto-sans-thai), "Leelawadee UI", Tahoma, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.65;
   text-rendering: optimizeLegibility;
@@ -264,6 +267,13 @@ p {
 .nav-item:hover>.submenu,
 .nav-item:focus-within>.submenu {
   display: block;
+}
+
+/* Hide submenu right after a submenu link is clicked (JS adds .is-dismissed,
+   cleared on mouse-leave). Beats :hover/:focus-within while mouse still sits
+   over the menu after a same-page hash navigation. */
+.nav-item.is-dismissed>.submenu {
+  display: none !important;
 }
 
 .submenu a {
@@ -1718,6 +1728,12 @@ a:hover .text-link svg,
   margin-top: 40px;
   padding-top: 22px;
   border-top: 1px solid rgba(255, 255, 255, .12);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  color: #728691;
+  font-size: .78rem;
+  line-height: 2;
 }
 
 .footer-tags p {
@@ -1725,6 +1741,22 @@ a:hover .text-link svg,
   color: #728691;
   font-size: .78rem;
   line-height: 2;
+}
+
+.footer-tags a {
+  color: #728691;
+  text-decoration: none;
+}
+
+.footer-tags a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer-tags a:not(:last-child)::after {
+  content: '|';
+  margin: 0 8px;
+  color: rgba(255, 255, 255, .2);
 }
 
 @media (max-width: 1000px) {
@@ -1934,6 +1966,21 @@ a:hover .text-link svg,
 .not-found h1 {
   font-size: clamp(2.8rem, 6vw, 5rem);
   margin-bottom: 18px;
+}
+
+@media (max-width: 1150px) {
+  .header-inner {
+    gap: 10px;
+  }
+
+  .nav-link {
+    padding: 10px 7px;
+    font-size: .88rem;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
 }
 
 @media (max-width: 1000px) {
@@ -2273,7 +2320,7 @@ body {
   min-height: 118px;
   padding: 14px;
   display: grid;
-  grid-template-columns: 1.05fr 1fr 1.2fr auto;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) minmax(0, 1.2fr) auto;
   gap: 0;
   align-items: stretch;
   background: white;
@@ -2284,6 +2331,7 @@ body {
 
 .quick-booking label {
   min-width: 0;
+  max-width: 100%;
   padding: 13px 24px;
   display: grid;
   align-content: center;
@@ -2419,16 +2467,26 @@ body {
 }
 
 .reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
   gap: 28px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
   margin-top: 36px;
+  padding: 6px 6px 20px;
+}
+
+.reviews-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .review-card {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  flex: 0 0 calc((100% - 56px) / 3);
+  min-width: 0;
+  scroll-snap-align: start;
   background: var(--white);
   border: 1px solid #ececec;
   border-radius: 22px;
@@ -2468,6 +2526,7 @@ body {
 }
 
 .review-media {
+  height:100%;
   position: relative;
   aspect-ratio: 4 / 3;
   background: #f1ede6;
@@ -2504,10 +2563,8 @@ body {
   color: #fff;
 }
 
-@media (max-width: 1000px) {
-  .carousel-arrows-for-reviews {
-    display: flex;
-  }
+.carousel-arrows-for-reviews {
+  display: flex;
 }
 
 @media (max-width: 760px) {
@@ -2519,12 +2576,12 @@ body {
 
 @media (max-width: 1000px) {
   .reviews-grid {
-    grid-template-columns: repeat(3, minmax(280px, 84vw));
+    gap: 24px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     margin-inline: -20px;
-    padding: 4px 20px 18px;
+    padding: 6px 20px 20px;
   }
 
   .reviews-grid::-webkit-scrollbar {
@@ -2532,6 +2589,7 @@ body {
   }
 
   .review-card {
+    flex-basis: clamp(280px, 42vw, 360px);
     scroll-snap-align: start;
   }
 }
@@ -2539,6 +2597,10 @@ body {
 @media (max-width: 760px) {
   .reviews-grid {
     gap: 18px;
+  }
+
+  .review-card {
+    flex-basis: min(300px, 84vw);
   }
 }
 
@@ -2722,7 +2784,7 @@ body {
   .quick-booking {
     min-height: 260px;
     padding: 12px;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     border-radius: 24px;
   }
 
@@ -2785,6 +2847,21 @@ body {
 
 .section-familiar {
   background: #fff;
+}
+
+/* Full-bleed image banner between familiar and reviews sections */
+.home-full-banner {
+  position: relative;
+  width: 100%;
+  height: clamp(280px, 42vw, 520px);
+  margin: 0;
+  overflow: hidden;
+  background: #f1ede6;
+}
+
+.home-full-banner img {
+  object-fit: cover;
+  object-position: center 60%;
 }
 
 .content-intro {
@@ -2944,7 +3021,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-prompt), sans-serif;
+  font-family: var(--font-noto-sans-thai), sans-serif;
   font-weight: 650;
 }
 
@@ -2953,7 +3030,7 @@ body {
 }
 
 .vehicle-price-tabs .ant-table {
-  font-family: var(--font-prompt), sans-serif;
+  font-family: var(--font-noto-sans-thai), sans-serif;
 }
 
 .vehicle-price-tabs .ant-table-wrapper .ant-table-thead>tr>th {
@@ -4063,7 +4140,7 @@ button.fleet-gallery-item video {
     gap: 18px;
     overflow-x: auto;
     margin-right: -14px;
-    padding: 2px 14px 18px 0;
+    padding: 25px 14px 26px 6px;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
   }
@@ -4231,22 +4308,31 @@ button.fleet-gallery-item video {
 }
 
 .quick-booking .quick-booking-select.ant-select {
+  min-width: 0;
+  max-width: 100%;
   font-weight: 750;
 }
 
 .quick-booking .quick-booking-select .ant-select-selector {
+  max-width: 100%;
   padding: 0 !important;
+  overflow: hidden;
   background: transparent !important;
   color: var(--ink);
 }
 
 .quick-booking .quick-booking-select .ant-select-selection-item,
-.quick-booking .quick-booking-select .ant-select-selection-placeholder {
+.quick-booking .quick-booking-select .ant-select-selection-placeholder,
+.quick-booking .quick-booking-select .ant-select-selection-search {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   line-height: 1.4 !important;
 }
 
 .ant-select-dropdown {
-  font-family: var(--font-prompt), sans-serif;
+  font-family: var(--font-noto-sans-thai), sans-serif;
 }
 
 /* Ant Design controls on the booking form (match the native field look) */
@@ -5235,7 +5321,7 @@ a.vehicle-model-card {
   inset: 0;
   background:
     radial-gradient(1100px 520px at 85% 15%, rgba(233, 205, 163, .20), transparent 60%),
-    linear-gradient(90deg, #09192c 0%, #0a274d 36%, rgba(10, 39, 77, .88) 55%, rgba(30, 70, 107, .48) 76%, rgba(30, 70, 107, .18) 100%);
+    linear-gradient(90deg, #09192c 0%, #0a274d 22%, rgba(10, 39, 77, .9) 38%, rgba(30, 70, 107, .5) 58%, rgba(30, 70, 107, .12) 78%, transparent 100%);
   pointer-events: none;
 }
 
@@ -5716,11 +5802,73 @@ a.vehicle-model-card {
 
 .quick-booking-standalone {
   margin-top: 26px;
+  min-width: 0;
 }
 
 .quick-booking-standalone .quick-booking {
   border: 1px solid var(--line);
   box-shadow: none;
+}
+
+/* Very small screens: stack request-booking fields so long
+   destination names can't push the select outside the card. */
+@media (max-width: 480px) {
+  .header-inner {
+    gap: 10px;
+    min-height: 68px;
+  }
+
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .drawer-trigger {
+    width: 40px;
+    height: 40px;
+  }
+
+  .locale-flag img {
+    width: 22px;
+    height: 15px;
+  }
+
+  .quick-booking {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .quick-booking label,
+  .quick-booking label:first-child,
+  .quick-booking label:nth-child(3) {
+    grid-column: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .quick-booking-submit {
+    grid-column: auto;
+  }
+
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .field,
+  .booking-form .field .booking-select.ant-select {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .booking-form .field .booking-select .ant-select-selection-item,
+  .booking-form .field .booking-select .ant-select-selection-placeholder {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .quick-booking-note {

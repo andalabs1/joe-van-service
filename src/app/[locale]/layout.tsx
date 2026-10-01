@@ -8,7 +8,7 @@ import {FloatingContact} from '@/components/mobile-actions';
 import {DesignProvider} from '@/components/design-provider';
 import {AntdRegistry} from '@ant-design/nextjs-registry';
 import {Toaster} from 'sonner';
-import {IBM_Plex_Sans_Thai, Prompt} from 'next/font/google';
+import {IBM_Plex_Sans_Thai, Noto_Sans_Thai} from 'next/font/google';
 import type {Metadata} from 'next';
 import '../globals.css';
 
@@ -19,11 +19,11 @@ export const metadata: Metadata = {
   }
 };
 
-const prompt = Prompt({
+const notoSansThai = Noto_Sans_Thai({
   weight: ['300', '400', '500', '600', '700', '800'],
   subsets: ['thai', 'latin'],
   display: 'swap',
-  variable: '--font-prompt'
+  variable: '--font-noto-sans-thai'
 });
 
 const ibmPlexSansThai = IBM_Plex_Sans_Thai({
@@ -49,7 +49,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${prompt.variable} ${ibmPlexSansThai.variable}`}>
+    <html lang={locale} className={`${notoSansThai.variable} ${ibmPlexSansThai.variable}`}>
       <body>
         <a className="skip-link" href="#main">Skip to content</a>
         <AntdRegistry>

@@ -1,7 +1,7 @@
 'use server';
 
 import {z} from 'zod';
-import {formatContactLineMessage, isLineConfigured, pushLineText} from '@/lib/line';
+import {buildContactFlexMessage, isLineConfigured, pushLineFlex} from '@/lib/line';
 
 export type ContactState = {
   status: 'idle' | 'error' | 'success' | 'unconfigured';
@@ -50,7 +50,7 @@ export async function submitContact(
     let lineError: unknown = null;
     if (lineEnabled) {
       try {
-        await pushLineText(formatContactLineMessage({...parsed.data, locale}));
+        await pushLineFlex(buildContactFlexMessage({...parsed.data, locale}));
       } catch (error) {
         lineError = error;
         console.error('[contact] LINE push failed:', error);

@@ -4,42 +4,6 @@ import type {Locale} from '@/i18n/routing';
 import {vehicleModels} from '@/data/vehicles';
 import {Logo} from './logo';
 
-const seoTags = [
-  'Airport transfer',
-  'เช่ารถตู้พร้อมคนขับ',
-  'บริการรถตู้พร้อมคนขับ',
-  'บริการรถตู้เช่า',
-  'บริการเช่าเหมารถตู้',
-  'รถตู้ VIP',
-  'รถตู้นำเที่ยว',
-  'รถตู้เช่า',
-  'รถตู้เช่าพร้อมคนขับ',
-  'รถตู้เหมา',
-  'รถรับส่งสนามบิน',
-  'เช่าเหมารถตู้',
-  'เช่า Alphard',
-  'เช่า Hyundai Staria',
-  'เช่ารถ Alphard',
-  'เช่ารถตู้',
-  'เช่ารถตู้ 1 วันราคา',
-  'เช่ารถตู้กรุงเทพ',
-  'เช่ารถตู้ที่ไหนดี',
-  'เช่ารถตู้พัทยา',
-  'เช่ารถตู้ราคา',
-  'เช่ารถตู้ราคาถูก',
-  'เช่ารถตู้วีไอพี',
-  'เช่ารถตู้หัวหิน',
-  'เช่ารถตู้เชียงใหม่',
-  'เช่ารถตู้ไปเที่ยวราคา',
-  'เช่าอัลพาร์ด',
-  'เหมารถตู้',
-  'เหมารถตู้พร้อมคนขับ',
-  'เหมารถตู้พัทยา',
-  'เหมารถตู้ไปต่างจังหวัด',
-  'เหมารถตู้ไปหัวหิน',
-  'เหมารถตู้ไปเที่ยว'
-];
-
 export async function SiteFooter({locale}: {locale: Locale}) {
   const t = await getTranslations({locale, namespace: 'Common'});
   const footer = await getTranslations({locale, namespace: 'Footer'});
@@ -52,6 +16,7 @@ export async function SiteFooter({locale}: {locale: Locale}) {
     {value: 'north-northeast', label: bangkok('northNortheast')},
     {value: 'south', label: bangkok('south')}
   ];
+  const seoLinks = footer.raw('seoLinks') as {label: string; href: string}[];
 
   return (
     <footer className="site-footer">
@@ -81,9 +46,13 @@ export async function SiteFooter({locale}: {locale: Locale}) {
           </ul>
         </nav>
       </div>
-      <div className="shell footer-tags">
-        <p>{seoTags.join(' | ')}</p>
-      </div>
+      <nav className="shell footer-tags" aria-label={footer('summary')}>
+        {seoLinks.map((tag) => (
+          <Link key={tag.label} href={tag.href} locale={locale}>
+            {tag.label}
+          </Link>
+        ))}
+      </nav>
       <div className="shell footer-bottom">
         <p>{footer('pricing')}</p>
         <div className="footer-bottom-links">

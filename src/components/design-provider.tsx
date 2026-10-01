@@ -12,7 +12,7 @@ export function DesignProvider({children}: {children: React.ReactNode}) {
           colorText: '#0E1B28',
           colorBorder: '#A4B3C6',
           borderRadius: 14,
-          fontFamily: 'var(--font-prompt), sans-serif'
+          fontFamily: 'var(--font-noto-sans-thai), sans-serif'
         },
         components: {
           Tabs: {inkBarColor: '#2D5A8D', itemSelectedColor: '#2D5A8D'},

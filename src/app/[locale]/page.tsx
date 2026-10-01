@@ -11,6 +11,7 @@ import { getVehicleStartingPrices } from '@/data/vehicle-pricing';
 import { ArrowIcon, CalendarIcon, GlobeIcon, LineIcon, PhoneIcon, RouteIcon, ShieldIcon, WhatsappIcon } from '@/components/icons';
 import { VehicleCard } from '@/components/vehicle-card';
 import { CarouselArrows } from '@/components/carousel-arrows';
+import { ReviewsAutoScroll } from '@/components/reviews-auto-scroll';
 import { FormSelect } from '@/components/form-select';
 import { HomeGalleries, type GalleryMedia } from '@/components/home-galleries';
 import { formatPrice } from '@/data/pricing';
@@ -32,7 +33,10 @@ export default async function HomePage({ params }: PageProps) {
   const reviews = [
     { text: t('review1Text'), name: t('review1Name'), trip: t('review1Trip'), image: '/gallery/S__49463317_0.jpg' },
     { text: t('review2Text'), name: t('review2Name'), trip: t('review2Trip'), image: '/gallery/S__49463318_0.jpg' },
-    { text: t('review3Text'), name: t('review3Name'), trip: t('review3Trip'), image: '/gallery/S__49463316_0.jpg' }
+    { text: t('review3Text'), name: t('review3Name'), trip: t('review3Trip'), image: '/gallery/S__49463316_0.jpg' },
+    { text: t('review4Text'), name: t('review4Name'), trip: t('review4Trip'), image: '/gallery/S__49463319_0.jpg' },
+    { text: t('review5Text'), name: t('review5Name'), trip: t('review5Trip'), image: '/gallery/S__49463320_0.jpg' },
+    { text: t('review6Text'), name: t('review6Name'), trip: t('review6Trip'), image: '/gallery/S__49463322_0.jpg' }
   ];
   const serviceShowcaseCards = [
     {
@@ -131,15 +135,18 @@ export default async function HomePage({ params }: PageProps) {
         aria-labelledby="home-hero-title"
         className="home-hero-gradient relative isolate flex min-h-[640px] items-end overflow-hidden lg:min-h-[520px] lg:max-h-[520px] lg:items-center"
       >
-        {/* Background — รูปด้านหลัง + gradient ทับ ด้านขวาอ่อนลงให้เห็นรถ */}
-        <Image
-          src="/hero-16.webp"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="home-hero-photo"
-        />
+        {/* Background — desktop: hero-16.webp, mobile (<=1000px): hero.jpg */}
+        <picture>
+          <source media="(max-width: 1000px)" srcSet="/hero.jpg" />
+          <Image
+            src="/hero-16.webp"
+            alt=""
+            fill
+            fetchPriority="high"
+            sizes="100vw"
+            className="home-hero-photo"
+          />
+        </picture>
         <div aria-hidden="true" className="home-hero-gradient-bg" />
         <div aria-hidden="true" className="home-hero-gradient-glow" />
 
@@ -327,9 +334,20 @@ export default async function HomePage({ params }: PageProps) {
         </div>
       </section>
 
+      <figure className="home-full-banner" aria-label={t('interiorSecondAlt')}>
+        <Image
+          src="/inside-seat-2.jpg"
+          alt={t('interiorSecondAlt')}
+          fill
+          sizes="100vw"
+          loading="lazy"
+        />
+      </figure>
+
       <section className="section reviews-section" aria-labelledby="reviews-title"><div className="shell">
         <div className="section-heading"><p className="eyebrow">{t('reviewsEyebrow')}</p><h2 id="reviews-title">{t('reviewsTitle')}</h2><p>{t('reviewsLead')}</p></div>
         <CarouselArrows targetId="reviews-row" prevLabel={t('lightboxPrev')} nextLabel={t('lightboxNext')} className="carousel-arrows-for-reviews" />
+        <ReviewsAutoScroll targetId="reviews-row" />
         <div className="reviews-grid" id="reviews-row">{reviews.map((review) => (
           <article key={review.name} className="review-card">
             <div className="review-card-body">
