@@ -5,9 +5,7 @@ import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {buildMetadata} from '@/lib/site';
 import {
-  getRouteVehiclePrices,
-  hourlyVehicleRates,
-  periodVehicleRates
+  getRouteVehiclePrices
 } from '@/data/vehicle-pricing';
 import {vehicleLuggageKey, vehicleModels, vehicleSeatFeatureKey, vehicleSeatsKey} from '@/data/vehicles';
 import {getVehicleStartingPrices} from '@/data/vehicle-pricing';
@@ -32,10 +30,6 @@ export default async function ServicesPage({params}: PageProps) {
   const vehiclesT = await getTranslations({locale, namespace: 'Vehicles'});
   const routesT = await getTranslations({locale, namespace: 'Routes'});
   const bangkokT = await getTranslations({locale, namespace: 'Bangkok'});
-  const splitColumns = <T,>(items: T[]) => {
-    const half = Math.ceil(items.length / 2);
-    return [items.slice(0, half), items.slice(half)];
-  };
 
   return (
     <>
@@ -49,7 +43,6 @@ export default async function ServicesPage({params}: PageProps) {
           <nav className="services-jump-links" aria-label={t('jumpLabel')}>
             <a href="#vehicles">{vehiclesT('title')}</a>
             <a href="#route-rates">{routesT('title')}</a>
-            <a href="#rate-packages">{t('packageRates')}</a>
           </nav>
         </div>
       </section>
@@ -120,51 +113,6 @@ export default async function ServicesPage({params}: PageProps) {
           <p className="services-route-note">{bangkokT('note')}</p>
         </div>
       </section>
-
-      <div id="rate-packages">
-        <section className="section section-muted" aria-labelledby="hourly-title">
-          <div className="shell">
-            <div className="price-panel">
-              <div className="price-panel-head">
-                <h2 id="hourly-title">{t('hourlyTitle')}</h2>
-                <Link href="/booking" locale={locale}>{common('bookNow')} <span aria-hidden="true">›</span></Link>
-              </div>
-              <div className="price-panel-grid">
-                {splitColumns(hourlyVehicleRates).map((column, index) => (
-                  <ul key={index}>
-                    {column.map((rate) => (
-                      <li key={rate.hours} className="price-row">
-                        <span>{rate.hours} {t('hours')} ({rate.maxKm} {common('km')})</span>
-                      </li>
-                    ))}
-                  </ul>
-                ))}
-              </div>
-              <p className="price-panel-note">{t('notFinal')}</p>
-            </div>
-          </div>
-        </section>
-        <section className="section shell" aria-labelledby="period-title">
-          <div className="price-panel">
-              <div className="price-panel-head">
-                <h2 id="period-title">{t('periodTitle')}</h2>
-                <Link href="/booking" locale={locale}>{common('bookNow')} <span aria-hidden="true">›</span></Link>
-              </div>
-              <div className="price-panel-grid">
-                {splitColumns(periodVehicleRates).map((column, index) => (
-                  <ul key={index}>
-                    {column.map((rate) => (
-                      <li key={rate.days} className="price-row">
-                        <span>{rate.days} {t('days')}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ))}
-              </div>
-              <p className="price-panel-note">{t('notFinal')}</p>
-            </div>
-        </section>
-      </div>
 
       <section className="section section-ink"><div className="shell conditions"><div><p className="eyebrow light">{common('referencePrice')}</p><h2>{t('conditionsTitle')}</h2></div><ul><li>{t('condition1')}</li><li>{t('condition2')}</li><li>{t('condition3')}</li><li>{t('condition4')}</li></ul></div></section>
     </>
