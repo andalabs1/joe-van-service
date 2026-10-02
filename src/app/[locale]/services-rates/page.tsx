@@ -5,6 +5,7 @@ import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
 import {buildMetadata} from '@/lib/site';
 import {
+  getRouteVehiclePrices,
   hourlyVehicleRates,
   periodVehicleRates
 } from '@/data/vehicle-pricing';
@@ -88,12 +89,31 @@ export default async function ServicesPage({params}: PageProps) {
             <Link href="/routes#route-rates" locale={locale} className="button button-ghost">{t('allRouteRates')}<ArrowIcon /></Link>
           </div>
           <div className="services-route-grid">
-            {featuredRoutes.slice(0, 8).map((route) => (
-              <article key={route.id} className="services-route-row">
-                <div className="services-route-name"><PinIcon /><div><span>{t('fromBangkok')}</span><h3>{route.destination[locale]}</h3></div></div>
-                <div className="services-route-facts"><span>{route.distanceKm} {common('km')}</span></div>
-              </article>
-            ))}
+            {featuredRoutes.slice(0, 8).map((route) => {
+              const prices = getRouteVehiclePrices(route.id);
+              const rows = [
+                {label: t('routeTableSedan'), value: prices.sedan},
+                {label: t('routeTableSuv'), value: prices.suv},
+                {label: t('routeTableVip'), value: prices.commuter8},
+                {label: t('routeTableNewVip'), value: prices.newCommuter8}
+              ];
+              return (
+                <article key={route.id} className="services-route-row services-route-priced">
+                  <div className="services-route-top">
+                    <div className="services-route-name"><PinIcon /><div><span>{t('fromBangkok')}</span><h3>{route.destination[locale]}</h3></div></div>
+                    <div className="services-route-facts"><span>{route.distanceKm} {common('km')}</span></div>
+                  </div>
+                  <ul className="services-route-prices">
+                    {rows.map((row) => (
+                      <li key={row.label}>
+                        <span>{row.label}</span>
+                        <strong>{row.value !== null ? (formatPrice(row.value, locale) ?? common('requestQuote')) : common('requestQuote')}</strong>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              );
+            })}
           </div>
           <p className="services-route-note">{bangkokT('note')}</p>
         </div>
