@@ -94,8 +94,10 @@ export default async function ServicesPage({params}: PageProps) {
               const rows = [
                 {label: t('routeTableSedan'), value: prices.sedan},
                 {label: t('routeTableSuv'), value: prices.suv},
-                {label: t('routeTableVip'), value: prices.commuter8},
-                {label: t('routeTableNewVip'), value: prices.newCommuter8}
+                {label: t('routeTableVanOldStandard'), value: prices.commuter10},
+                {label: t('routeTableVanOldVip'), value: prices.commuter8},
+                {label: t('routeTableVanNewStandard'), value: prices.newCommuter10},
+                {label: t('routeTableVanNewVip'), value: prices.newCommuter8}
               ];
               return (
                 <article key={route.id} className="services-route-row services-route-priced">
