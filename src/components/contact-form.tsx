@@ -61,12 +61,12 @@ export function ContactForm({locale, labels}: {locale: Locale; labels: ContactLa
 
       <div className="form-grid">
         <label className="field">
-          <span>{labels.name}</span>
+          <span>{labels.name}<span className="required-mark" aria-hidden="true">*</span></span>
           <Input name="name" autoComplete="name" maxLength={120} required aria-label={labels.name} className="booking-control" status={state.errors?.name ? 'error' : ''} />
           <FieldError state={state} name="name" />
         </label>
         <label className="field">
-          <span>{labels.telephone}</span>
+          <span>{labels.telephone}<span className="required-mark" aria-hidden="true">*</span></span>
           <Input name="telephone" type="tel" autoComplete="tel" maxLength={30} required aria-label={labels.telephone} className="booking-control" status={state.errors?.telephone ? 'error' : ''} />
           <FieldError state={state} name="telephone" />
         </label>
@@ -75,12 +75,12 @@ export function ContactForm({locale, labels}: {locale: Locale; labels: ContactLa
           <Input name="lineId" maxLength={100} aria-label={labels.lineId} className="booking-control" />
         </label>
         <label className="field field-full">
-          <span>{labels.message}</span>
+          <span>{labels.message}<span className="required-mark" aria-hidden="true">*</span></span>
           <Input.TextArea name="message" rows={5} maxLength={1500} required aria-label={labels.message} className="booking-control" status={state.errors?.message ? 'error' : ''} />
           <FieldError state={state} name="message" />
         </label>
         <div className="checkbox-field field-full">
-          <Checkbox name="privacyConsent" value="on" required>{labels.consent}</Checkbox>
+          <Checkbox name="privacyConsent" value="on" required>{labels.consent}<span className="required-mark" aria-hidden="true">*</span></Checkbox>
           <FieldError state={state} name="privacyConsent" />
         </div>
       </div>

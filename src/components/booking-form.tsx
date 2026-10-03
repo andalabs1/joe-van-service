@@ -93,32 +93,32 @@ export function BookingForm({
         <legend>{labels.tripTitle}</legend>
         <div className="form-grid">
           <label className="field">
-            <span><CalendarIcon />{labels.pickupDate}</span>
+            <span><CalendarIcon />{labels.pickupDate}<span className="required-mark" aria-hidden="true">*</span></span>
             <FormDatePicker name="pickupDate" ariaLabel={labels.pickupDate} placeholder={labels.pickupDate} className="booking-control" />
             <FieldError state={state} name="pickupDate" />
           </label>
           <label className="field">
-            <span><ClockIcon />{labels.pickupTime}</span>
+            <span><ClockIcon />{labels.pickupTime}<span className="required-mark" aria-hidden="true">*</span></span>
             <FormTimePicker name="pickupTime" ariaLabel={labels.pickupTime} placeholder={labels.pickupTime} className="booking-control" />
             <FieldError state={state} name="pickupTime" />
           </label>
           <label className="field">
-            <span><PinIcon />{labels.origin}</span>
+            <span><PinIcon />{labels.origin}<span className="required-mark" aria-hidden="true">*</span></span>
             <Input name="origin" defaultValue={defaults.origin || ''} maxLength={160} required aria-label={labels.origin} className="booking-control" status={state.errors?.origin ? 'error' : ''} />
             <FieldError state={state} name="origin" />
           </label>
           <label className="field">
-            <span><PinIcon />{labels.destination}</span>
+            <span><PinIcon />{labels.destination}<span className="required-mark" aria-hidden="true">*</span></span>
             <Input name="destination" defaultValue={defaults.destination || ''} maxLength={160} required aria-label={labels.destination} className="booking-control" status={state.errors?.destination ? 'error' : ''} />
             <FieldError state={state} name="destination" />
           </label>
           <label className="field">
-            <span><UsersIcon />{labels.passengers}</span>
+            <span><UsersIcon />{labels.passengers}<span className="required-mark" aria-hidden="true">*</span></span>
             <FormNumber name="passengers" defaultValue={1} min={1} max={50} ariaLabel={labels.passengers} className="booking-control" />
             <FieldError state={state} name="passengers" />
           </label>
           <label className="field">
-            <span><RouteIcon />{labels.tripType}</span>
+            <span><RouteIcon />{labels.tripType}<span className="required-mark" aria-hidden="true">*</span></span>
             <FormSelect
               name="tripType"
               defaultValue="one-way"
@@ -134,7 +134,7 @@ export function BookingForm({
             <FieldError state={state} name="tripType" />
           </label>
           <label className="field">
-            <span><CompassIcon />{labels.vehicleType}</span>
+            <span><CompassIcon />{labels.vehicleType}<span className="required-mark" aria-hidden="true">*</span></span>
             <FormSelect
               name="vehicleType"
               defaultValue={defaults.vehicle || ''}
@@ -158,7 +158,7 @@ export function BookingForm({
         <legend className="visually-hidden">{labels.contactTitle}</legend>
         <div className="form-grid">
           <label className="field">
-            <span><PhoneIcon />{labels.telephone}</span>
+            <span><PhoneIcon />{labels.telephone}<span className="required-mark" aria-hidden="true">*</span></span>
             <Input name="telephone" type="tel" autoComplete="tel" maxLength={30} required aria-label={labels.telephone} className="booking-control" status={state.errors?.telephone ? 'error' : ''} />
             <FieldError state={state} name="telephone" />
           </label>
