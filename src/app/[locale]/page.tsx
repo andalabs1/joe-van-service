@@ -31,12 +31,12 @@ export default async function HomePage({ params }: PageProps) {
   const vehiclesCopy = await getTranslations({ locale, namespace: 'Vehicles' });
   const vehicle = await getTranslations({ locale, namespace: 'Vehicle' });
   const reviews = [
-    { text: t('review1Text'), name: t('review1Name'), trip: t('review1Trip'), image: '/gallery/S__49463317_0.jpg' },
-    { text: t('review2Text'), name: t('review2Name'), trip: t('review2Trip'), image: '/gallery/S__49463318_0.jpg' },
-    { text: t('review3Text'), name: t('review3Name'), trip: t('review3Trip'), image: '/gallery/S__49463316_0.jpg' },
-    { text: t('review4Text'), name: t('review4Name'), trip: t('review4Trip'), image: '/gallery/S__49463319_0.jpg' },
-    { text: t('review5Text'), name: t('review5Name'), trip: t('review5Trip'), image: '/gallery/S__49463320_0.jpg' },
-    { text: t('review6Text'), name: t('review6Name'), trip: t('review6Trip'), image: '/gallery/S__49463322_0.jpg' }
+    { text: t('review1Text'), image: '/gallery/S__49463317_0.jpg' },
+    { text: t('review2Text'), image: '/gallery/S__49463318_0.jpg' },
+    { text: t('review3Text'), image: '/gallery/S__49463316_0.jpg' },
+    { text: t('review4Text'), image: '/gallery/S__49463319_0.jpg' },
+    { text: t('review5Text'), image: '/gallery/S__49463320_0.jpg' },
+    { text: t('review6Text'), image: '/gallery/S__49463322_0.jpg' }
   ];
   const serviceShowcaseCards = [
     {
@@ -366,14 +366,13 @@ export default async function HomePage({ params }: PageProps) {
         <CarouselArrows targetId="reviews-row" prevLabel={t('lightboxPrev')} nextLabel={t('lightboxNext')} className="carousel-arrows-for-reviews" />
         <ReviewsAutoScroll targetId="reviews-row" />
         <div className="reviews-grid" id="reviews-row">{reviews.map((review) => (
-          <article key={review.name} className="review-card">
+          <article key={review.image} className="review-card">
             <div className="review-card-body">
               <p className="review-stars" aria-label="5 / 5">★★★★★</p>
               <p className="review-text">{review.text}</p>
-              <p className="review-trip">{review.trip}</p>
             </div>
             <div className="review-media">
-              <Image src={review.image} alt={`${t('reviewVideoLabel')} — ${review.trip}`} fill sizes="(max-width: 760px) 88vw, (max-width: 1100px) 45vw, 30vw" />
+              <Image src={review.image} alt={t('reviewVideoLabel')} fill sizes="(max-width: 760px) 88vw, (max-width: 1100px) 45vw, 30vw" />
             </div>
           </article>
         ))}</div>
