@@ -14,7 +14,10 @@ import '../globals.css';
 
 export const metadata: Metadata = {
   icons: {
-    icon: [{url: '/logo.webp', type: 'image/webp'}],
+    icon: [
+      {url: '/icon.svg', type: 'image/svg+xml'},
+      {url: '/logo.webp', type: 'image/webp'}
+    ],
     apple: [{url: '/logo.webp', type: 'image/webp'}]
   }
 };

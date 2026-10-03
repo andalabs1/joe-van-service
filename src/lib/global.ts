@@ -1,7 +1,10 @@
 // Central contact / site config — แก้เบอร์ตรงนี้ที่เดียวทั้งเว็บ
 // โทรหลัก: 0999241591 / WhatsApp: 0905957563 (66905957563)
 
-export const siteUrl = 'https://joe-van-service.vercel.app';
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+const normalizedSiteUrl = rawSiteUrl ? rawSiteUrl.replace(/\/+$/, '') : '';
+
+export const siteUrl = normalizedSiteUrl || 'https://joe-van-service.vercel.app';
 
 export const phone = '0999241591';
 export const phoneDisplay = '099-924-1591';

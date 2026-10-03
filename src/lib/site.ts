@@ -50,12 +50,21 @@ export function buildMetadata({
       title,
       description,
       siteName: 'mongkonridemate',
-      locale: locale === 'th' ? 'th_TH' : 'en_US'
+      locale: locale === 'th' ? 'th_TH' : 'en_US',
+      images: [
+        {
+          url: '/hero-16.webp',
+          width: 1200,
+          height: 630,
+          alt: title
+        }
+      ]
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title,
-      description
+      description,
+      images: ['/hero-16.webp']
     }
   };
 }

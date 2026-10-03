@@ -3,7 +3,7 @@ import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
-import {buildMetadata} from '@/lib/site';
+import {buildMetadata, siteUrl} from '@/lib/site';
 import {formatPrice} from '@/data/pricing';
 import {getVehicleStartingPrices, vehicleCategories, vehicleGroups} from '@/data/vehicle-pricing';
 import {vehicleLuggageKey, vehicleModelsByGroup, vehicleSeatFeatureKey, vehicleSeatsKey, type VehicleGroupKey} from '@/data/vehicles';
@@ -38,9 +38,19 @@ export default async function VehiclesPage({params}: PageProps) {
     }))
   };
 
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {'@type': 'ListItem', position: 1, name: locale === 'th' ? 'หน้าแรก' : 'Home', item: `${siteUrl}/${locale}`},
+      {'@type': 'ListItem', position: 2, name: t('title'), item: `${siteUrl}/${locale}/vehicles`}
+    ]
+  };
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(itemList).replaceAll('<', '\\u003c')}} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(breadcrumb).replaceAll('<', '\\u003c')}} />
       <section className="vehicles-hero">
         <Image
           className="vehicles-hero-image"
@@ -79,7 +89,7 @@ export default async function VehiclesPage({params}: PageProps) {
                   price={price !== null ? (formatPrice(price, locale) ?? common('requestQuote')) : common('requestQuote')}
                   href={`/booking?vehicle=${model.category}`}
                   locale={locale}
-                  actionLabel={t('bookNow')}
+                  actionLabel={common('startingAt')}
                   badge={isBestPrice ? t('bestPrice') : undefined}
                 />
               );

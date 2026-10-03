@@ -17,6 +17,14 @@ export async function SiteFooter({locale}: {locale: Locale}) {
     {value: 'south', label: bangkok('south')}
   ];
   const seoLinks = footer.raw('seoLinks') as {label: string; href: string}[];
+  const seenSeoLinks = new Set<string>();
+  const uniqueSeoLinks = seoLinks.filter((tag) => {
+    const key = `${tag.label}||${tag.href}`;
+    if (seenSeoLinks.has(key)) return false;
+    seenSeoLinks.add(key);
+    return true;
+  });
+  const tagsLabel = locale === 'th' ? 'ลิงก์บริการที่เกี่ยวข้อง' : 'Related service links';
 
   return (
     <footer className="site-footer">
@@ -46,8 +54,8 @@ export async function SiteFooter({locale}: {locale: Locale}) {
           </ul>
         </nav>
       </div>
-      <nav className="shell footer-tags" aria-label={footer('summary')}>
-        {seoLinks.map((tag) => (
+      <nav className="shell footer-tags" aria-label={tagsLabel}>
+        {uniqueSeoLinks.map((tag) => (
           <Link key={tag.label} href={tag.href} locale={locale}>
             {tag.label}
           </Link>

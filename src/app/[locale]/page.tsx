@@ -121,16 +121,33 @@ export default async function HomePage({ params }: PageProps) {
       badge: model.category === 'sedan' || model.category === 'suv' ? vehiclesCopy('bestPrice') : undefined
     };
   });
+  const canonicalHome = `${siteUrl}/${locale}`;
   const localBusiness = {
-    '@context': 'https://schema.org', '@type': 'LocalBusiness',
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `${siteUrl}/#business`,
     name: 'mongkonridemate',
-    url: siteUrl,
-    areaServed: 'Thailand', priceRange: '฿฿'
+    url: canonicalHome,
+    image: `${siteUrl}/hero-16.webp`,
+    logo: `${siteUrl}/logo.webp`,
+    telephone: phone,
+    areaServed: 'Thailand',
+    priceRange: '฿฿',
+    sameAs: [lineUrl, whatsappUrl]
+  };
+  const organization = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${siteUrl}/#organization`,
+    name: 'mongkonridemate',
+    url: canonicalHome,
+    logo: `${siteUrl}/logo.webp`
   };
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusiness).replaceAll('<', '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organization).replaceAll('<', '\\u003c') }} />
       <section
         aria-labelledby="home-hero-title"
         className="home-hero-gradient relative isolate flex min-h-[640px] items-end overflow-hidden lg:min-h-[520px] lg:max-h-[520px] lg:items-center"
@@ -282,7 +299,7 @@ export default async function HomePage({ params }: PageProps) {
                 price={model.price}
                 href={model.href}
                 locale={locale}
-                actionLabel={vehiclesCopy('bookNow')}
+                actionLabel={common('startingAt')}
                 badge={model.badge}
               />
             ))}
@@ -353,11 +370,10 @@ export default async function HomePage({ params }: PageProps) {
             <div className="review-card-body">
               <p className="review-stars" aria-label="5 / 5">★★★★★</p>
               <p className="review-text">{review.text}</p>
-              <p className="review-name">— {review.name}</p>
               <p className="review-trip">{review.trip}</p>
             </div>
             <div className="review-media">
-              <Image src={review.image} alt={`${t('reviewVideoLabel')} — ${review.name}`} fill sizes="(max-width: 760px) 88vw, (max-width: 1100px) 45vw, 30vw" />
+              <Image src={review.image} alt={`${t('reviewVideoLabel')} — ${review.trip}`} fill sizes="(max-width: 760px) 88vw, (max-width: 1100px) 45vw, 30vw" />
             </div>
           </article>
         ))}</div>

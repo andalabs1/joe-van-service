@@ -4,7 +4,7 @@ import {getTranslations} from 'next-intl/server';
 import {ArrowIcon} from '@/components/icons';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
-import {buildMetadata} from '@/lib/site';
+import {buildMetadata, siteUrl} from '@/lib/site';
 import {bangkokRoutes, type BangkokRoute, type RouteRegion} from '@/data/routes';
 
 type PageProps = {
@@ -53,8 +53,18 @@ export default async function RoutesPage({params}: PageProps) {
     ));
   };
 
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {'@type': 'ListItem', position: 1, name: locale === 'th' ? 'หน้าแรก' : 'Home', item: `${siteUrl}/${locale}`},
+      {'@type': 'ListItem', position: 2, name: t('title'), item: `${siteUrl}/${locale}/routes`}
+    ]
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(breadcrumb).replaceAll('<', '\\u003c')}} />
       <section className="routes-hero">
         <Image src="/routes-map-hero.webp" alt="" fill priority sizes="100vw" className="routes-hero-image" />
         <div className="routes-hero-overlay" />

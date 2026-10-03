@@ -3,7 +3,7 @@ import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
-import {buildMetadata, contactEmail, lineId, lineUrl, phone, phoneDisplay, whatsappDisplay, whatsappUrl} from '@/lib/site';
+import {buildMetadata, contactEmail, lineId, lineUrl, phone, phoneDisplay, siteUrl, whatsappDisplay, whatsappUrl} from '@/lib/site';
 import {ArrowIcon, HeartIcon, LineIcon, MailIcon, PhoneIcon, PinIcon, ShieldIcon, StarIcon, UsersIcon, WhatsappIcon} from '@/components/icons';
 import {ContactForm} from '@/components/contact-form';
 import { FaCheck } from 'react-icons/fa6';
@@ -34,8 +34,28 @@ export default async function ContactPage({params}: PageProps) {
     {question: t('faqQuestion5'), answer: t('faqAnswer5')}
   ];
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {'@type': 'Answer', text: faq.answer}
+    }))
+  };
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {'@type': 'ListItem', position: 1, name: locale === 'th' ? 'หน้าแรก' : 'Home', item: `${siteUrl}/${locale}`},
+      {'@type': 'ListItem', position: 2, name: t('aboutTitle'), item: `${siteUrl}/${locale}/contact`}
+    ]
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(faqSchema).replaceAll('<', '\\u003c')}} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(breadcrumb).replaceAll('<', '\\u003c')}} />
       <section className="contact-about-hero">
         <Image src="/full-van.jpg" alt={t('heroAlt')} fill priority sizes="(max-width: 760px) 100vw, 50vw" />
         <div className="contact-about-overlay" />

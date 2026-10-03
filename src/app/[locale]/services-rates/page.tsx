@@ -3,7 +3,7 @@ import type {Metadata} from 'next';
 import {getTranslations} from 'next-intl/server';
 import {Link} from '@/i18n/navigation';
 import type {Locale} from '@/i18n/routing';
-import {buildMetadata} from '@/lib/site';
+import {buildMetadata, siteUrl} from '@/lib/site';
 import {
   getRouteVehiclePrices
 } from '@/data/vehicle-pricing';
@@ -31,8 +31,18 @@ export default async function ServicesPage({params}: PageProps) {
   const routesT = await getTranslations({locale, namespace: 'Routes'});
   const bangkokT = await getTranslations({locale, namespace: 'Bangkok'});
 
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {'@type': 'ListItem', position: 1, name: locale === 'th' ? 'หน้าแรก' : 'Home', item: `${siteUrl}/${locale}`},
+      {'@type': 'ListItem', position: 2, name: t('title'), item: `${siteUrl}/${locale}/services-rates`}
+    ]
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(breadcrumb).replaceAll('<', '\\u003c')}} />
       <section className="services-hero">
         <Image className="services-hero-image" src="/bangkok-road-hero.png" alt="" fill priority sizes="100vw" />
         <div className="services-hero-overlay" />
