@@ -1525,37 +1525,30 @@ a:hover .text-link svg,
   font-weight: 800;
 }
 
-.channel-toggle {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+/* Joined LINE/WhatsApp channel Select + id Input (antd Space.Compact) */
+.channel-compact .channel-select.ant-select {
+  flex: none;
 }
 
-.channel-toggle label {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  margin: 0;
-  border: 1px solid #bdc9ce;
-  border-radius: 11px;
-  background: #fafcfc;
-  color: var(--ink);
-  font-size: .85rem;
-  font-weight: 700;
-  cursor: pointer;
+.channel-compact .channel-select.ant-select,
+.channel-compact .channel-select .ant-select-selector {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
 }
 
-.channel-toggle label.active {
-  border-color: #1DB446;
-  background: #e8f8ee;
+.channel-compact .channel-select .ant-select-selector {
+  border-right: 0 !important;
 }
 
-.channel-toggle input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+.channel-compact .booking-control.ant-input {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+/* ลด padding ด้านบนในช่อง select เลือกช่องทางลงครึ่งหนึ่ง (12px → 6px) */
+.booking-form .channel-compact .channel-select.ant-select {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
 }
 
 .checkbox-field {
@@ -4319,12 +4312,14 @@ button.fleet-gallery-item video {
 
 /* Ant Design dropdowns (replaces all native <select> elements) */
 .field .booking-select.ant-select {
-  width: 100%;
+   margin-right:9px !important;
   font-weight: 500;
 }
 
 .field .booking-select .ant-select-selector {
   min-height: 48px;
+  max-width: 92px !important;
+ 
   align-items: center;
   border-color: #bdc9ce !important;
   border-radius: 11px !important;
@@ -6032,5 +6027,7 @@ a.vehicle-model-card {
 }
 
 .ant-select-content-has-value {
-  padding-top:18px !important;
+ position : 0px !important;
+ height:48px !important;
+ padding-top : 14px !important;
 }

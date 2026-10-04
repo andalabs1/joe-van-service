@@ -3,7 +3,7 @@
 import {useActionState, useEffect, useRef, useState} from 'react';
 import {useFormStatus} from 'react-dom';
 import {toast} from 'sonner';
-import {Checkbox, Input} from 'antd';
+import {Checkbox, Input, Select, Space} from 'antd';
 import {submitContact, type ContactState} from '@/app/[locale]/contact/actions';
 import {FormPendingToast} from './form-pending-toast';
 import type {Locale} from '@/i18n/routing';
@@ -74,17 +74,21 @@ export function ContactForm({locale, labels}: {locale: Locale; labels: ContactLa
         </label>
         <label className="field field-full">
           <span>{labels.lineId}<span className="required-mark" aria-hidden="true">*</span></span>
-          <div className="channel-toggle" role="radiogroup" aria-label={labels.lineChannel}>
-            <label className={channel === 'line' ? 'active' : ''}>
-              <input type="radio" name="lineChannel" value="line" checked={channel === 'line'} onChange={() => setChannel('line')} />
-              LINE
-            </label>
-            <label className={channel === 'whatsapp' ? 'active' : ''}>
-              <input type="radio" name="lineChannel" value="whatsapp" checked={channel === 'whatsapp'} onChange={() => setChannel('whatsapp')} />
-              WhatsApp
-            </label>
-          </div>
-          <Input name="lineId" maxLength={100} required aria-label={channel === 'whatsapp' ? 'WhatsApp' : 'LINE ID'} placeholder={channel === 'whatsapp' ? '08xxxxxxxx' : '@lineid'} className="booking-control" status={state.errors?.lineId ? 'error' : ''} />
+          <input type="hidden" name="lineChannel" value={channel} />
+          <Space.Compact block className="channel-compact">
+            <Select
+              aria-label={labels.lineChannel}
+              className="booking-select channel-select"
+              style={{width:92,maxWidth:92}}
+              value={channel}
+              onChange={(value) => setChannel(value as 'line' | 'whatsapp')}
+              options={[
+                {value: 'line', label: 'LINE'},
+                {value: 'whatsapp', label: 'WhatsApp'}
+              ]}
+            />
+            <Input name="lineId" maxLength={100} required aria-label={channel === 'whatsapp' ? 'WhatsApp' : 'LINE ID'} placeholder={channel === 'whatsapp' ? '08xxxxxxxx' : '@lineid'} className="booking-control" status={state.errors?.lineId ? 'error' : ''} />
+          </Space.Compact>
           <FieldError state={state} name="lineId" />
         </label>
         <label className="field field-full">
