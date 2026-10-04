@@ -1,6 +1,6 @@
 'use client';
 
-import {useActionState, useEffect, useRef} from 'react';
+import {useActionState, useEffect, useRef, useState} from 'react';
 import {useFormStatus} from 'react-dom';
 import {toast} from 'sonner';
 import {Checkbox, Input} from 'antd';
@@ -11,6 +11,7 @@ import type {Locale} from '@/i18n/routing';
 type ContactLabels = {
   name: string;
   telephone: string;
+  lineChannel: string;
   lineId: string;
   message: string;
   consent: string;
@@ -34,6 +35,7 @@ function SubmitButton({labels}: {labels: ContactLabels}) {
 
 export function ContactForm({locale, labels}: {locale: Locale; labels: ContactLabels}) {
   const [state, formAction] = useActionState(submitContact, initialState);
+  const [channel, setChannel] = useState<'line' | 'whatsapp'>('line');
   const formRef = useRef<HTMLFormElement>(null);
   const lastToastRef = useRef<string | null>(null);
 
@@ -71,8 +73,19 @@ export function ContactForm({locale, labels}: {locale: Locale; labels: ContactLa
           <FieldError state={state} name="telephone" />
         </label>
         <label className="field field-full">
-          <span>{labels.lineId}</span>
-          <Input name="lineId" maxLength={100} aria-label={labels.lineId} className="booking-control" />
+          <span>{labels.lineId}<span className="required-mark" aria-hidden="true">*</span></span>
+          <div className="channel-toggle" role="radiogroup" aria-label={labels.lineChannel}>
+            <label className={channel === 'line' ? 'active' : ''}>
+              <input type="radio" name="lineChannel" value="line" checked={channel === 'line'} onChange={() => setChannel('line')} />
+              LINE
+            </label>
+            <label className={channel === 'whatsapp' ? 'active' : ''}>
+              <input type="radio" name="lineChannel" value="whatsapp" checked={channel === 'whatsapp'} onChange={() => setChannel('whatsapp')} />
+              WhatsApp
+            </label>
+          </div>
+          <Input name="lineId" maxLength={100} required aria-label={channel === 'whatsapp' ? 'WhatsApp' : 'LINE ID'} placeholder={channel === 'whatsapp' ? '08xxxxxxxx' : '@lineid'} className="booking-control" status={state.errors?.lineId ? 'error' : ''} />
+          <FieldError state={state} name="lineId" />
         </label>
         <label className="field field-full">
           <span>{labels.message}<span className="required-mark" aria-hidden="true">*</span></span>

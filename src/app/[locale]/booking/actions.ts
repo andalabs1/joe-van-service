@@ -32,7 +32,8 @@ const bookingSchema = z.object({
   vehicleType: z.enum(['commuter8', 'commuter10', 'newCommuter8', 'newCommuter10', 'suv', 'sedan']),
   luggage: z.string().trim().max(120).optional(),
   telephone: z.string().trim().min(8).max(30),
-  lineId: z.string().trim().max(100).optional(),
+  lineChannel: z.enum(['line', 'whatsapp']).default('line'),
+  lineId: z.string().trim().min(1).max(100),
   notes: z.string().trim().max(1500).optional(),
   website: z.string().max(0)
 });

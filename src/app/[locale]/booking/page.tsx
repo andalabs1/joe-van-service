@@ -37,7 +37,7 @@ export default async function BookingPage({params, searchParams}: PageProps) {
   const vehicleParam = typeof query.vehicle === 'string' ? query.vehicle : '';
   const vehicleCategory = (vehicleCategories as readonly string[]).includes(vehicleParam) ? vehicleParam : undefined;
   const serviceNote = service ? publishedServices.find((item) => item.slug === service)?.name[locale] : undefined;
-  const labels = Object.fromEntries(['tripTitle','contactTitle','pickupDate','pickupTime','origin','destination','tripType','oneWay','roundTrip','overnight','passengers','vehicleType','selectVehicle','luggage','luggagePlaceholder','telephone','lineId','notes','submit','submitting'].map((key) => [key, t(key)])) as Parameters<typeof BookingForm>[0]['labels'];
+  const labels = Object.fromEntries(['tripTitle','contactTitle','pickupDate','pickupTime','origin','destination','tripType','oneWay','roundTrip','overnight','passengers','vehicleType','selectVehicle','luggage','luggagePlaceholder','telephone','lineChannel','lineId','notes','submit','submitting'].map((key) => [key, t(key)])) as Parameters<typeof BookingForm>[0]['labels'];
 
   return (
     <>

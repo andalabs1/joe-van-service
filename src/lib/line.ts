@@ -105,6 +105,10 @@ function truncate(value: string, max: number): string {
   return value.length > max ? `${value.slice(0, max)}…` : value;
 }
 
+function channelLabel(value: string | undefined | null): string {
+  return value === 'whatsapp' ? 'WhatsApp' : 'LINE';
+}
+
 const TRIP_LABEL: Record<string, string> = {
   'one-way': 'เที่ยวเดียว',
   'round-trip': 'ไป-กลับ',
@@ -132,11 +136,13 @@ export type BookingLinePayload = {
   vehicleType: string;
   luggage?: string;
   telephone: string;
-  lineId?: string;
+  lineChannel: 'line' | 'whatsapp';
+  lineId: string;
   notes?: string;
 };
 
 export function formatBookingLineMessage(data: BookingLinePayload): string {
+  const channel = channelLabel(data.lineChannel);
   const lines = [
     '🚐 คำขอจองใหม่ ' + data.reference,
     `🌐 ภาษา: ${data.locale === 'th' ? 'ไทย' : 'English'}`,
@@ -147,7 +153,7 @@ export function formatBookingLineMessage(data: BookingLinePayload): string {
     `👥 ผู้โดยสาร: ${data.passengers} | 🚐 ประเภทรถ: ${data.vehicleType}`,
     data.luggage ? `🧳 สัมภาระ: ${data.luggage}` : null,
     `📞 โทร: ${data.telephone}`,
-    data.lineId ? `💬 LINE: ${data.lineId}` : null,
+    `💬 ${channel}: ${data.lineId}`,
     data.notes ? `📝 หมายเหตุ: ${data.notes}` : null
   ].filter(Boolean);
   return lines.join('\n');
@@ -157,17 +163,19 @@ export type ContactLinePayload = {
   locale: 'th' | 'en';
   name: string;
   telephone: string;
-  lineId?: string;
+  lineChannel: 'line' | 'whatsapp';
+  lineId: string;
   message: string;
 };
 
 export function formatContactLineMessage(data: ContactLinePayload): string {
+  const channel = channelLabel(data.lineChannel);
   const lines = [
     '✉️ ข้อความติดต่อใหม่',
     `🌐 ภาษา: ${data.locale === 'th' ? 'ไทย' : 'English'}`,
     `👤 ชื่อ: ${data.name}`,
     `📞 โทร: ${data.telephone}`,
-    data.lineId ? `💬 LINE: ${data.lineId}` : null,
+    `💬 ${channel}: ${data.lineId}`,
     `📝 ข้อความ: ${data.message}`
   ].filter(Boolean);
   return (lines as string[]).join('\n');
@@ -177,6 +185,7 @@ export function buildBookingFlexMessage(data: BookingLinePayload): LineFlexMessa
   const BOOKING_GREEN = '#1DB446';
   const tripLabel = TRIP_LABEL[data.tripType] ?? data.tripType;
   const vehicleLabel = VEHICLE_LABEL[data.vehicleType] ?? data.vehicleType;
+  const channel = channelLabel(data.lineChannel);
   const telUri = `tel:${data.telephone.replaceAll(/[^+\d]/g, '')}`;
 
   return {
@@ -230,7 +239,7 @@ export function buildBookingFlexMessage(data: BookingLinePayload): LineFlexMessa
               flexRow('รถ', vehicleLabel),
               flexRow('สัมภาระ', data.luggage),
               flexRow('โทร', data.telephone),
-              flexRow('LINE', data.lineId),
+              flexRow(channel, data.lineId),
               flexRow('หมายเหตุ', data.notes)
             ].filter(Boolean)
           }
@@ -239,12 +248,18 @@ export function buildBookingFlexMessage(data: BookingLinePayload): LineFlexMessa
       footer: {
         type: 'box',
         layout: 'vertical',
+        spacing: 'sm',
         contents: [
           {
             type: 'button',
             style: 'primary',
             color: BOOKING_GREEN,
             action: {type: 'uri', label: `โทร ${data.telephone}`, uri: telUri}
+          },
+          {
+            type: 'button',
+            style: 'secondary',
+            action: {type: 'clipboard', label: `คัดลอก ${channel}`, clipboardText: data.lineId}
           }
         ]
       }
@@ -254,6 +269,7 @@ export function buildBookingFlexMessage(data: BookingLinePayload): LineFlexMessa
 
 export function buildContactFlexMessage(data: ContactLinePayload): LineFlexMessage {
   const CONTACT_GREEN = '#1DB446';
+  const channel = channelLabel(data.lineChannel);
   const telUri = `tel:${data.telephone.replaceAll(/[^+\d]/g, '')}`;
 
   return {
@@ -301,7 +317,7 @@ export function buildContactFlexMessage(data: ContactLinePayload): LineFlexMessa
             spacing: 'sm',
             contents: [
               flexRow('โทร', data.telephone),
-              flexRow('LINE', data.lineId),
+              flexRow(channel, data.lineId),
               flexRow('ข้อความ', data.message)
             ].filter(Boolean)
           }
@@ -310,12 +326,18 @@ export function buildContactFlexMessage(data: ContactLinePayload): LineFlexMessa
       footer: {
         type: 'box',
         layout: 'vertical',
+        spacing: 'sm',
         contents: [
           {
             type: 'button',
             style: 'primary',
             color: CONTACT_GREEN,
             action: {type: 'uri', label: `โทร ${data.telephone}`, uri: telUri}
+          },
+          {
+            type: 'button',
+            style: 'secondary',
+            action: {type: 'clipboard', label: `คัดลอก ${channel}`, clipboardText: data.lineId}
           }
         ]
       }

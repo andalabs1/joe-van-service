@@ -124,6 +124,7 @@ export default async function ContactPage({params}: PageProps) {
               name: t('formName'),
               telephone: t('formTelephone'),
               lineId: t('formLineId'),
+              lineChannel: t('formLineChannel'),
               message: t('formMessage'),
               consent: t('formConsent'),
               submit: t('formSubmit'),

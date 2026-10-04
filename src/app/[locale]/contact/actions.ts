@@ -13,7 +13,8 @@ const contactSchema = z.object({
   locale: z.enum(['th', 'en']),
   name: z.string().trim().min(2).max(120),
   telephone: z.string().trim().min(8).max(30),
-  lineId: z.string().trim().max(100).optional(),
+  lineChannel: z.enum(['line', 'whatsapp']).default('line'),
+  lineId: z.string().trim().min(1).max(100),
   message: z.string().trim().min(5).max(1500),
   privacyConsent: z.literal('on'),
   website: z.string().max(0)
