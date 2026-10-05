@@ -5,7 +5,7 @@
     "type": "bubble",
     "hero": {
       "type": "image",
-      "url": "https://joe-van-service.vercel.app/hero-16.webp",
+      "url": "https://www.mongkonridemate.com/hero-16.webp",
       "size": "full",
       "aspectRatio": "20:13",
       "aspectMode": "cover",
@@ -72,7 +72,7 @@
           "action": {
             "type": "uri",
             "label": "จองรถออนไลน์",
-            "uri": "https://joe-van-service.vercel.app/th/booking"
+            "uri": "https://www.mongkonridemate.com/th/booking"
           }
         }
       ]

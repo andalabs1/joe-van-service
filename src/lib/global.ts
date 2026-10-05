@@ -4,7 +4,7 @@
 const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 const normalizedSiteUrl = rawSiteUrl ? rawSiteUrl.replace(/\/+$/, '') : '';
 
-export const siteUrl = normalizedSiteUrl || 'https://joe-van-service.vercel.app';
+export const siteUrl = normalizedSiteUrl || 'https://www.mongkonridemate.com';
 
 export const phone = '0999241591';
 export const phoneDisplay = '099-924-1591';
