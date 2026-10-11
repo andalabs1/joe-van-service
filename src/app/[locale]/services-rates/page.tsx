@@ -77,7 +77,7 @@ export default async function ServicesPage({params}: PageProps) {
                 price={price !== null ? (formatPrice(price, locale) ?? common('requestQuote')) : common('requestQuote')}
                 href={`/booking?vehicle=${model.category}`}
                 locale={locale}
-                actionLabel={vehiclesT('bookNow')}
+                actionLabel={common('startingAt')}
                 badge={isBestPrice ? vehiclesT('bestPrice') : undefined}
               />
             );
