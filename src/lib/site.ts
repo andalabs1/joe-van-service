@@ -42,7 +42,7 @@ export function buildMetadata({
     metadataBase: new URL(siteUrl),
     alternates: {
       canonical,
-      languages: {th, en, 'x-default': th}
+      languages: {th, en, 'x-default': en}
     },
     openGraph: {
       type: 'website',

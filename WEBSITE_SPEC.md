@@ -28,7 +28,7 @@ Primary conversion:
 - ไม่ทำเป็น SPA หน้าเดียว
 - ทุก URL ต้องส่ง HTML ที่มีเนื้อหาหลักครบ
 - ใช้ภาษาไทยและอังกฤษทั้งระบบ
-- ภาษาเริ่มต้นคือภาษาไทย
+- ภาษาเริ่มต้นคือภาษาอังกฤษ
 - ใช้ URL prefix `/th` และ `/en`
 - หน้า service detail ใช้ dynamic route
 - ราคาจากกรุงเทพฯ ทุกจุดหมายรวมอยู่ในหน้า Bangkok หน้าเดียว
@@ -330,7 +330,7 @@ Formatting:
 - Unique meta description
 - Canonical URL
 - Thai/English language alternates
-- `x-default` ชี้ไปภาษาไทย
+- `x-default` ชี้ไปภาษาอังกฤษ
 - Open Graph title/description เฉพาะภาษา
 - หนึ่ง H1 ต่อหน้า
 - Semantic heading order
